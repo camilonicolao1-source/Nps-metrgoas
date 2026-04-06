@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión de Bodega</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+/* ===== TOKENS ===== */
+:root,[data-theme="light"]{
+  --text-xs:clamp(0.75rem,.7rem + .25vw,.875rem);
+  --text-sm:clamp(0.875rem,.8rem + .35vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;--sp6:1.5rem;
+  --sp8:2rem;--sp10:2.5rem;--sp12:3rem;--sp16:4rem;
+  --bg:#f5f3ef;--surf:#f9f8f5;--surf2:#ffffff;--surf-off:#edeae4;--surf-dyn:#e4e1db;
+  --div:#dcd9d4;--bord:#d0cdc6;
+  --tx:#26231b;--tx-m:#6b6860;--tx-f:#b8b5b0;--tx-inv:#f8f7f3;
+  --pri:#01696f;--pri-h:#0c4e54;--pri-hl:#cedad6;
+  --warn:#964219;--warn-hl:#f2e6dc;
+  --err:#a12c7b;--err-hl:#f0dcea;
+  --ok:#3d7020;--ok-hl:#d2dfc9;
+  --info:#0060a0;--info-hl:#c8daea;
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+  --sh-sm:0 1px 2px oklch(.2 .01 80/.07);
+  --sh-md:0 4px 12px oklch(.2 .01 80/.09),0 1px 2px oklch(.2 .01 80/.06);
+  --sh-lg:0 12px 32px oklch(.2 .01 80/.12);
+  --tr:180ms cubic-bezier(.16,1,.3,1);
+  --font:'Satoshi','Inter',sans-serif;
+  --w-default:1100px;
+}
+[data-theme="dark"]{
+  --bg:#161513;--surf:#1b1a18;--surf2:#1f1e1c;--surf-off:#232220;--surf-dyn:#2b2a28;
+  --div:#272624;--bord:#363432;
+  --tx:#cccac7;--tx-m:#787570;--tx-f:#565350;--tx-inv:#2a2926;
+  --pri:#4f98a3;--pri-h:#227f8b;--pri-hl:#1d3434;
+  --warn:#c0683d;--warn-hl:#3a2318;
+  --err:#d163a7;--err-hl:#3d1e35;
+  --ok:#6daa45;--ok-hl:#1c2d12;
+  --info:#5591c7;--info-hl:#1a2d3e;
+  --sh-sm:0 1px 2px #0004;--sh-md:0 4px 12px #0005;--sh-lg:0 12px 32px #0008;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --bg:#161513;--surf:#1b1a18;--surf2:#1f1e1c;--surf-off:#232220;--surf-dyn:#2b2a28;
+  --div:#272624;--bord:#363432;--tx:#cccac7;--tx-m:#787570;--tx-f:#565350;--tx-inv:#2a2926;
+  --pri:#4f98a3;--pri-h:#227f8b;--pri-hl:#1d3434;
+  --warn:#c0683d;--warn-hl:#3a2318;--err:#d163a7;--err-hl:#3d1e35;
+  --ok:#6daa45;--ok-hl:#1c2d12;--info:#5591c7;--info-hl:#1a2d3e;
+  --sh-sm:0 1px 2px #0004;--sh-md:0 4px 12px #0005;--sh-lg:0 12px 32px #0008;
+}}
+
+/* ===== BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{font-family:var(--font);font-size:var(--text-base);color:var(--tx);background:var(--bg);min-height:100dvh;line-height:1.6}
+h1,h2,h3,h4{line-height:1.2;text-wrap:balance}
+p,li{max-width:72ch;text-wrap:pretty}
+img,svg{display:block;max-width:100%}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+a,button,[role="button"],input,select,textarea{transition:color var(--tr),background var(--tr),border-color var(--tr),box-shadow var(--tr),opacity var(--tr)}
+:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:var(--r-sm)}
+::selection{background:oklch(from var(--pri) l c h/.25)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ===== LAYOUT ===== */
+.app-shell{display:grid;grid-template-columns:240px 1fr;grid-template-rows:auto 1fr;min-height:100dvh}
+@media(max-width:768px){.app-shell{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}}
+
+/* ===== TOPBAR ===== */
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:var(--sp4);padding:0 var(--sp6);height:56px;background:var(--surf);border-bottom:1px solid var(--div);position:sticky;top:0;z-index:200}
+.topbar-logo{display:flex;align-items:center;gap:var(--sp2);text-decoration:none;color:var(--tx);font-size:var(--text-sm);font-weight:700;flex-shrink:0}
+.topbar-logo svg{color:var(--pri)}
+.topbar-title{font-size:var(--text-sm);color:var(--tx-m);margin-left:auto}
+.topbar-actions{display:flex;align-items:center;gap:var(--sp2);margin-left:var(--sp4)}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--r-full);color:var(--tx-m)}
+.icon-btn:hover{background:var(--surf-off);color:var(--tx)}
+
+/* ===== SIDEBAR ===== */
+.sidebar{background:var(--surf);border-right:1px solid var(--div);padding:var(--sp4) var(--sp3);display:flex;flex-direction:column;gap:var(--sp1);overflow-y:auto}
+@media(max-width:768px){.sidebar{flex-direction:row;border-right:none;border-bottom:1px solid var(--div);padding:var(--sp2) var(--sp3);overflow-x:auto;overflow-y:hidden;white-space:nowrap}}
+.nav-item{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp2) var(--sp3);border-radius:var(--r-md);font-size:var(--text-sm);font-weight:500;color:var(--tx-m);text-decoration:none;cursor:pointer;border:none;background:none;font:inherit;width:100%;text-align:left}
+.nav-item:hover{background:var(--surf-off);color:var(--tx)}
+.nav-item.active{background:var(--pri-hl);color:var(--pri)}
+.nav-item svg{flex-shrink:0;opacity:.75}
+.nav-item.active svg{opacity:1}
+.nav-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx-f);padding:var(--sp4) var(--sp3) var(--sp2);margin-top:var(--sp2)}
+@media(max-width:768px){.nav-label{display:none}.nav-item{flex-direction:column;gap:var(--sp1);padding:var(--sp2);font-size:var(--text-xs);min-width:64px;align-items:center;text-align:center}}
+
+/* ===== MAIN ===== */
+.main{overflow-y:auto;padding:var(--sp8);display:flex;flex-direction:column;gap:var(--sp8)}
+@media(max-width:768px){.main{padding:var(--sp4)}}
+.page{display:none;flex-direction:column;gap:var(--sp6)}
+.page.active{display:flex}
+
+/* ===== PAGE HEADER ===== */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp4);flex-wrap:wrap}
+.page-hdr-text h1{font-size:var(--text-xl);font-weight:700;color:var(--tx)}
+.page-hdr-text p{font-size:var(--text-sm);color:var(--tx-m);margin-top:var(--sp1)}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:var(--sp2);padding:var(--sp2) var(--sp4);border-radius:var(--r-md);font-size:var(--text-sm);font-weight:600;cursor:pointer;border:1px solid transparent;transition:all var(--tr);white-space:nowrap}
+.btn-primary{background:var(--pri);color:#fff;border-color:var(--pri)}
+.btn-primary:hover{background:var(--pri-h);border-color:var(--pri-h)}
+.btn-secondary{background:var(--surf2);color:var(--tx);border-color:var(--bord)}
+.btn-secondary:hover{background:var(--surf-off)}
+.btn-ghost{color:var(--tx-m)}
+.btn-ghost:hover{background:var(--surf-off);color:var(--tx)}
+.btn-danger{background:var(--err-hl);color:var(--err);border-color:color-mix(in oklch,var(--err) 20%,transparent)}
+.btn-danger:hover{background:var(--err);color:#fff}
+.btn-sm{padding:var(--sp1) var(--sp3);font-size:var(--text-xs)}
+
+/* ===== CARDS ===== */
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);padding:var(--sp6);box-shadow:var(--sh-sm)}
+.card-sm{padding:var(--sp4)}
+.card-title{font-size:var(--text-sm);font-weight:700;color:var(--tx);margin-bottom:var(--sp4)}
+
+/* ===== KPI GRID ===== */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:var(--sp4)}
+.kpi{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);padding:var(--sp5) var(--sp6);box-shadow:var(--sh-sm);display:flex;flex-direction:column;gap:var(--sp2)}
+.kpi-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx-m)}
+.kpi-value{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;line-height:1}
+.kpi-sub{font-size:var(--text-xs);color:var(--tx-m)}
+.kpi-badge{display:inline-flex;align-items:center;gap:var(--sp1);padding:2px var(--sp2);border-radius:var(--r-full);font-size:var(--text-xs);font-weight:600}
+.badge-ok{background:var(--ok-hl);color:var(--ok)}
+.badge-warn{background:var(--warn-hl);color:var(--warn)}
+.badge-err{background:var(--err-hl);color:var(--err)}
+.badge-info{background:var(--info-hl);color:var(--info)}
+.badge-neu{background:var(--surf-off);color:var(--tx-m)}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;border-radius:var(--r-xl);border:1px solid var(--bord);box-shadow:var(--sh-sm)}
+table{width:100%;border-collapse:collapse;background:var(--surf)}
+thead{border-bottom:1px solid var(--div)}
+th{padding:var(--sp3) var(--sp4);font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx-m);text-align:left;white-space:nowrap;background:var(--surf-off)}
+td{padding:var(--sp3) var(--sp4);font-size:var(--text-sm);color:var(--tx);border-bottom:1px solid var(--div);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
+.td-num{font-variant-numeric:tabular-nums;text-align:right}
+
+/* ===== FORMS ===== */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:var(--sp4)}
+.field{display:flex;flex-direction:column;gap:var(--sp2)}
+.field label{font-size:var(--text-xs);font-weight:600;color:var(--tx-m);text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in oklch,var(--pri) 15%,transparent)}
+.field input::placeholder{color:var(--tx-f)}
+.field-req::after{content:" *";color:var(--err)}
+.field-hint{font-size:var(--text-xs);color:var(--tx-m);margin-top:var(--sp1)}
+.form-actions{display:flex;gap:var(--sp3);flex-wrap:wrap;margin-top:var(--sp4)}
+
+/* ===== ALERT / CALLOUT ===== */
+.alert{display:flex;gap:var(--sp3);align-items:flex-start;padding:var(--sp4) var(--sp5);border-radius:var(--r-lg);border:1px solid}
+.alert-ok{background:var(--ok-hl);border-color:color-mix(in oklch,var(--ok) 30%,transparent);color:color-mix(in oklch,var(--ok) 80%,var(--tx))}
+.alert-warn{background:var(--warn-hl);border-color:color-mix(in oklch,var(--warn) 30%,transparent);color:color-mix(in oklch,var(--warn) 80%,var(--tx))}
+.alert-err{background:var(--err-hl);border-color:color-mix(in oklch,var(--err) 30%,transparent);color:color-mix(in oklch,var(--err) 80%,var(--tx))}
+.alert-info{background:var(--info-hl);border-color:color-mix(in oklch,var(--info) 30%,transparent);color:color-mix(in oklch,var(--info) 80%,var(--tx))}
+.alert-body{flex:1}
+.alert-title{font-weight:700;font-size:var(--text-sm);margin-bottom:var(--sp1)}
+.alert-text{font-size:var(--text-sm);line-height:1.55}
+
+/* ===== STOCK BAR ===== */
+.stock-bar{height:6px;border-radius:var(--r-full);background:var(--surf-off);overflow:hidden;margin-top:var(--sp2)}
+.stock-bar-fill{height:100%;border-radius:var(--r-full);transition:width .6s ease}
+.fill-ok{background:var(--ok)}
+.fill-warn{background:var(--warn)}
+.fill-crit{background:var(--err)}
+
+/* ===== STEPS ===== */
+.steps{display:flex;flex-direction:column;gap:0;padding:0}
+.step{display:grid;grid-template-columns:32px 1fr;gap:var(--sp4);position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;left:15px;top:32px;bottom:-8px;width:2px;background:var(--div)}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;flex-shrink:0;box-shadow:var(--sh-sm);position:relative;z-index:1}
+.step-body{padding-bottom:var(--sp6)}
+.step-body h3{font-size:var(--text-sm);font-weight:700;color:var(--tx);margin-bottom:var(--sp1)}
+.step-body p{font-size:var(--text-sm);color:var(--tx-m);line-height:1.6}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:oklch(.1 0 0/.5);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:var(--sp4);opacity:0;pointer-events:none;transition:opacity var(--tr)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);padding:var(--sp8);max-width:540px;width:100%;box-shadow:var(--sh-lg);transform:translateY(8px);transition:transform var(--tr)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp6)}
+.modal-hdr h2{font-size:var(--text-lg);font-weight:700}
+
+/* ===== TOAST ===== */
+.toast-area{position:fixed;bottom:var(--sp6);right:var(--sp6);display:flex;flex-direction:column;gap:var(--sp2);z-index:600;pointer-events:none}
+.toast{background:var(--tx);color:var(--bg);padding:var(--sp3) var(--sp5);border-radius:var(--r-lg);font-size:var(--text-sm);font-weight:500;box-shadow:var(--sh-lg);transform:translateX(120%);transition:transform .3s cubic-bezier(.16,1,.3,1);pointer-events:all;max-width:320px}
+.toast.show{transform:translateX(0)}
+
+/* ===== MISC ===== */
+.divider{height:1px;background:var(--div);margin:var(--sp2) 0}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp3);padding:var(--sp16) var(--sp8);text-align:center;color:var(--tx-m)}
+.empty svg{color:var(--tx-f);opacity:.6}
+.empty h3{font-size:var(--text-base);font-weight:600;color:var(--tx-m)}
+.empty p{font-size:var(--text-sm);max-width:32ch}
+.tag{display:inline-flex;align-items:center;gap:var(--sp1);padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4)}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+.rule-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);padding:var(--sp5) var(--sp6);box-shadow:var(--sh-sm)}
+.rule-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:var(--r-sm);background:var(--pri-hl);color:var(--pri);font-size:var(--text-xs);font-weight:700;margin-right:var(--sp2);flex-shrink:0}
+.rule-title{font-size:var(--text-sm);font-weight:700;color:var(--tx);display:flex;align-items:center;margin-bottom:var(--sp2)}
+.rule-body{font-size:var(--text-sm);color:var(--tx-m);line-height:1.65}
+.prohibit{display:flex;align-items:flex-start;gap:var(--sp3);background:var(--err-hl);border:1px solid color-mix(in oklch,var(--err) 25%,transparent);border-radius:var(--r-lg);padding:var(--sp4) var(--sp5);margin-top:var(--sp4)}
+.prohibit p{font-size:var(--text-sm);color:color-mix(in oklch,var(--err) 80%,var(--tx));margin:0;max-width:unset}
+.checklist{display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp3)}
+.check-item{display:flex;align-items:center;gap:var(--sp3);font-size:var(--text-sm);color:var(--tx-m)}
+.check-icon{width:18px;height:18px;border-radius:var(--r-sm);border:1.5px solid var(--bord);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.check-icon.done{background:var(--pri);border-color:var(--pri);color:#fff}
+
+/* ===== SEGUIMIENTO MATERIALES ===== */
+.seg-page{display:none;flex-direction:column;gap:var(--sp6)}
+.seg-page.active{display:flex}
+.seg-header{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);padding:var(--sp6);box-shadow:var(--sh-sm)}
+.seg-title-row{display:flex;align-items:center;gap:var(--sp4);flex-wrap:wrap;margin-bottom:var(--sp4)}
+.seg-proyecto-code{font-size:clamp(1.2rem,3vw,1.8rem);font-weight:800;color:var(--tx);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.seg-meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--sp3)}
+.seg-meta-item{display:flex;flex-direction:column;gap:2px}
+.seg-meta-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m)}
+.seg-meta-val{font-size:var(--text-sm);font-weight:600;color:var(--tx)}
+
+/* Tabla seguimiento */
+.seg-table-wrap{overflow-x:auto;border-radius:var(--r-xl);border:1px solid var(--bord);box-shadow:var(--sh-sm)}
+.seg-table{width:100%;border-collapse:collapse;background:var(--surf);min-width:900px}
+.seg-table thead tr:first-child th{background:var(--pri);color:#fff;text-align:center;font-size:var(--text-xs);font-weight:700;padding:var(--sp2) var(--sp3);letter-spacing:.04em;border-right:1px solid color-mix(in oklch,#fff 20%,transparent)}
+.seg-table thead tr:first-child th:first-child{background:var(--surf-off);color:var(--tx-m);text-align:left;border-right:1px solid var(--div)}
+.seg-group-entrega{background:color-mix(in oklch,var(--pri) 85%,#000)!important}
+.seg-group-declarado{background:#7a5900!important}
+.seg-group-devuelto{background:#4a6000!important}
+.seg-group-adicional{background:#005a5a!important}
+.seg-table thead tr:nth-child(2) th{background:var(--surf-off);color:var(--tx-m);font-size:var(--text-xs);font-weight:600;padding:var(--sp2) var(--sp3);border-bottom:2px solid var(--div);border-right:1px solid var(--div);text-align:center;white-space:nowrap;position:relative}
+.seg-table thead tr:nth-child(2) th.col-fixed{text-align:left}
+.seg-table td{padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);border-bottom:1px solid var(--div);border-right:1px solid var(--div);vertical-align:middle}
+.seg-table td:last-child,.seg-table th:last-child{border-right:none}
+.seg-table tr:last-child td{border-bottom:none}
+.seg-table tr:hover td{background:color-mix(in oklch,var(--surf-off) 60%,transparent)}
+.seg-td-center{text-align:center}
+.seg-td-num{text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
+.seg-td-code{font-size:var(--text-xs);font-weight:700;color:var(--tx-m);white-space:nowrap}
+.seg-td-desc{font-size:var(--text-xs);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg-td-cat{text-align:center}
+.cat-chip{display:inline-flex;padding:1px 7px;border-radius:var(--r-sm);font-size:10px;font-weight:700;letter-spacing:.04em}
+.cat-cu{background:var(--info-hl);color:var(--info)}
+.cat-mli{background:var(--warn-hl);color:var(--warn)}
+.cat-mts{background:var(--ok-hl);color:var(--ok)}
+.seg-pct{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:800;background:var(--ok-hl);color:var(--ok)}
+.seg-pct.pct-warn{background:var(--warn-hl);color:var(--warn)}
+.seg-pct.pct-err{background:var(--err-hl);color:var(--err)}
+.seg-dif-pos{color:var(--err);font-weight:800}
+.seg-dif-neg{color:var(--ok);font-weight:800}
+.seg-dif-zero{color:var(--tx-f)}
+.rv-reserva{color:var(--info);font-weight:600;font-size:var(--text-xs)}
+.rv-venta{color:var(--ok);font-weight:600;font-size:var(--text-xs)}
+.seg-date-col{writing-mode:horizontal-tb;font-size:10px;font-weight:700}
+
+/* Toolbar seguimiento */
+.seg-toolbar{display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap}
+.seg-back-btn{display:inline-flex;align-items:center;gap:var(--sp2);color:var(--tx-m);font-size:var(--text-sm);font-weight:600;cursor:pointer;border:none;background:none;padding:var(--sp2) var(--sp3);border-radius:var(--r-md)}
+.seg-back-btn:hover{background:var(--surf-off);color:var(--tx)}
+
+/* Modal agregar material */
+.modal-xl{max-width:860px}
+.seg-resumen{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--sp3);margin-bottom:var(--sp4)}
+.seg-kpi{background:var(--surf-off);border-radius:var(--r-lg);padding:var(--sp3) var(--sp4);display:flex;flex-direction:column;gap:2px}
+.seg-kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m)}
+.seg-kpi-val{font-size:var(--text-lg);font-weight:800;color:var(--tx);line-height:1}
+
+/* ===== INVENTARIO MODULE ===== */
+.inv-toolbar{display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap;margin-bottom:var(--sp4)}
+.inv-search{flex:1;min-width:160px;background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);outline:none}
+.inv-search:focus{border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in oklch,var(--pri) 15%,transparent)}
+.inv-filter{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);outline:none;cursor:pointer}
+.inv-filter:focus{border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in oklch,var(--pri) 15%,transparent)}
+.inv-count{font-size:var(--text-xs);color:var(--tx-m);white-space:nowrap;margin-left:auto}
+/* Existencias highlight */
+.exist-ok{color:var(--ok);font-weight:700}
+.exist-warn{color:var(--warn);font-weight:700}
+.exist-zero{color:var(--err);font-weight:700}
+/* Venta/Dev badge */
+.vd-venta{color:var(--ok);font-size:var(--text-xs);font-weight:700}
+.vd-dev{color:var(--warn);font-size:var(--text-xs);font-weight:700}
+.vd-res{color:var(--info);font-size:var(--text-xs);font-weight:700}
+/* Consolidado layout */
+.cons-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp4)}
+@media(max-width:900px){.cons-wrap{grid-template-columns:1fr}}
+.cons-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-sm)}
+.cons-card-hdr{padding:var(--sp3) var(--sp4);font-size:var(--text-xs);font-weight:800;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--div)}
+.cons-hdr-ent{background:color-mix(in oklch,var(--ok) 15%,var(--surf));color:var(--ok)}
+.cons-hdr-sal{background:color-mix(in oklch,var(--err) 12%,var(--surf));color:var(--err)}
+.cons-hdr-stk{background:color-mix(in oklch,var(--info) 12%,var(--surf));color:var(--info)}
+.cons-table{width:100%;border-collapse:collapse}
+.cons-table th{padding:var(--sp2) var(--sp3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m);background:var(--surf-off);border-bottom:1px solid var(--div);text-align:left}
+.cons-table td{padding:var(--sp2) var(--sp3);font-size:var(--text-xs);border-bottom:1px solid var(--div);color:var(--tx)}
+.cons-table tr:last-child td{border-bottom:none}
+.cons-table tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
+.cons-code{font-weight:700;color:var(--tx-m);font-size:10px}
+.cons-proy{font-size:10px;color:var(--tx-m)}
+.cons-qty{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+/* Facturas */
+.fact-region{display:inline-flex;padding:1px 8px;border-radius:var(--r-full);font-size:10px;font-weight:700;background:var(--info-hl);color:var(--info)}
+
+.proy-toolbar{display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap}
+.proy-search{flex:1;min-width:180px;background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);outline:none}
+.proy-search:focus{border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in oklch,var(--pri) 15%,transparent)}
+.proy-filter{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);outline:none;cursor:pointer}
+.proy-filter:focus{border-color:var(--pri);box-shadow:0 0 0 3px color-mix(in oklch,var(--pri) 15%,transparent)}
+.estado-sol{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
+.sol-solicitado{background:var(--info-hl);color:var(--info)}
+.sol-devolucion{background:#fffbe6;color:#92660a;border:1px solid #e8c84a}
+[data-theme="dark"] .sol-devolucion{background:#2e2600;color:#d4aa30;border-color:#5a4700}
+.sol-parcial{background:var(--warn-hl);color:var(--warn)}
+.sol-pendiente{background:var(--surf-off);color:var(--tx-m)}
+.pago-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700}
+.pago-si{background:var(--ok-hl);color:var(--ok)}
+.pago-no{background:var(--surf-off);color:var(--tx-f)}
+.pago-ph3{background:var(--info-hl);color:var(--info)}
+.tipo-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-sm);font-size:var(--text-xs);font-weight:700;background:var(--pri-hl);color:var(--pri);letter-spacing:.04em}
+.ver-link{display:inline-flex;align-items:center;gap:4px;color:var(--pri);font-size:var(--text-xs);font-weight:600;text-decoration:none;cursor:pointer;border:none;background:none;padding:2px 4px;border-radius:var(--r-sm)}
+.ver-link:hover{background:var(--pri-hl)}
+.modal-lg{max-width:720px}
+.detalle-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4)}
+@media(max-width:540px){.detalle-grid{grid-template-columns:1fr}}
+.detalle-field{display:flex;flex-direction:column;gap:4px}
+.detalle-field .df-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m)}
+.detalle-field .df-val{font-size:var(--text-sm);color:var(--tx);font-weight:500}
+.comuna-highlight{color:var(--err);font-weight:700}
+.proy-count{font-size:var(--text-xs);color:var(--tx-m);margin-left:auto;white-space:nowrap}
+.th-sort{cursor:pointer;user-select:none}
+.th-sort:hover{color:var(--tx)}
+.th-sort .sort-icon{display:inline-block;margin-left:4px;opacity:.4;font-style:normal}
+.th-sort.asc .sort-icon::after{content:'↑';opacity:1}
+.th-sort.desc .sort-icon::after{content:'↓';opacity:1}
+.th-sort:not(.asc):not(.desc) .sort-icon::after{content:'↕'}
+.proy-mobile-card{display:none}
+@media(max-width:768px){
+  .proy-table-wrap{display:none}
+  .proy-mobile-card{display:flex;flex-direction:column;gap:var(--sp3)}
+  .mob-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);padding:var(--sp4);display:flex;flex-direction:column;gap:var(--sp2);box-shadow:var(--sh-sm)}
+  .mob-card-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp2)}
+  .mob-card-code{font-size:var(--text-xs);font-weight:700;color:var(--tx-m);letter-spacing:.04em}
+  .mob-card-dir{font-size:var(--text-xs);color:var(--tx-m);margin-top:2px}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">
+  <img src="Logo NPS Gas.jpg.jpeg" alt="Logo" width="80" height="55" style="border-radius: 6px;">
+  Bodega NPS Metrogas
+</a>
+  <span class="topbar-title" id="page-title">Dashboard</span>
+  <div class="topbar-actions">
+    <button class="icon-btn" data-theme-toggle aria-label="Cambiar tema">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" aria-label="Navegación">
+  <button class="nav-item active" data-nav="dashboard">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <div class="nav-label">Operaciones</div>
+  <button class="nav-item" data-nav="solicitudes">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Nueva Solicitud
+  </button>
+  <button class="nav-item" data-nav="historial">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Historial
+  </button>
+  <button class="nav-item" data-nav="devolucion">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.75"/></svg>
+    Devolución
+  </button>
+  <div class="nav-label">Inventario</div>
+  <button class="nav-item" data-nav="inv-entradas">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+    Entradas
+  </button>
+  <button class="nav-item" data-nav="inv-salidas">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Salidas
+  </button>
+  <button class="nav-item" data-nav="inv-inventario">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    Inventario
+  </button>
+  <button class="nav-item" data-nav="inv-consolidado">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Consolidado
+  </button>
+  <button class="nav-item" data-nav="inv-facturas">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Facturas x Región
+  </button>
+  <div class="nav-label">Control</div>
+  <button class="nav-item" data-nav="proyectos">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Proyectos
+  </button>
+  <div class="nav-label">Referencia</div>
+  <button class="nav-item" data-nav="procedimiento">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Procedimiento
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+<!-- ========== DASHBOARD ========== -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Dashboard</h1>
+      <p>Resumen de operaciones de bodega</p>
+    </div>
+    <button class="btn btn-primary" onclick="navigate('solicitudes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Solicitud
+    </button>
+  </div>
+
+  <div class="kpi-grid" id="kpi-area"></div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Solicitudes recientes</div>
+      <div id="dash-solicitudes-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Devoluciones pendientes</div>
+      <div id="dash-devoluciones-list"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alertas de stock bajo</div>
+    <div id="dash-stock-alert"></div>
+  </div>
+</div>
+
+<!-- ========== NUEVA SOLICITUD ========== -->
+<div class="page" id="page-solicitudes">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Nueva Solicitud</h1>
+      <p>Complete todos los campos obligatorios — Art. 4.2</p>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="alert-body">
+      <div class="alert-title">Art. 4.1 — Toda solicitud debe quedar registrada</div>
+      <div class="alert-text">No se entregará material sin una solicitud previamente registrada en el sistema (Art. 4.3).</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <form id="form-solicitud" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-req" for="s-proyecto">Nombre de proyecto</label>
+          <input type="text" id="s-proyecto" placeholder="Ej: Proyecto Norte — Sector 3" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="s-codigo">Código de material</label>
+          <input type="text" id="s-codigo" placeholder="Ej: TUB-PE-053" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="s-tipo">Tipo de material</label>
+          <select id="s-tipo" required>
+            <option value="">Seleccionar...</option>
+            <option>Tubería PE rollo</option>
+            <option>Fitting / accesorios</option>
+            <option>Válvula</option>
+            <option>Herramienta</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-req" for="s-diametro">Diámetro / especificación técnica</label>
+          <input type="text" id="s-diametro" placeholder="Ej: 53 mm SDR 11" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="s-cantidad">Cantidad exacta requerida</label>
+          <input type="number" id="s-cantidad" placeholder="Ej: 39" min="0.1" step="0.1" required>
+          <span class="field-hint">En metros para tuberías en rollo, unidades para el resto</span>
+        </div>
+        <div class="field">
+          <label class="field-req" for="s-solicitante">Nombre del solicitante</label>
+          <input type="text" id="s-solicitante" placeholder="Nombre completo" required>
+        </div>
+      </div>
+      <div class="field" style="margin-top:var(--sp4)">
+        <label for="s-obs">Observaciones (opcional)</label>
+        <textarea id="s-obs" rows="2" placeholder="Comentarios adicionales..."></textarea>
+      </div>
+
+      <div id="solicitud-tuberia-notice" style="display:none;margin-top:var(--sp4)">
+        <div class="alert alert-warn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div class="alert-body">
+            <div class="alert-title">Art. 5 — Entrega de tubería en rollo</div>
+            <div class="alert-text" id="tuberia-notice-text">Bodega puede entregar el rollo completo. Deberá devolver el excedente no utilizado. La no devolución se imputa como consumo total del proyecto.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Registrar solicitud
+        </button>
+        <button type="reset" class="btn btn-secondary">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========== HISTORIAL ========== -->
+<div class="page" id="page-historial">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Historial de Solicitudes</h1>
+      <p>Registro completo de solicitudes y entregas</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Proyecto</th>
+          <th>Material</th>
+          <th>Código</th>
+          <th class="td-num">Solicitado</th>
+          <th class="td-num">Entregado</th>
+          <th>Estado</th>
+          <th>Solicitante</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="historial-tbody"></tbody>
+    </table>
+  </div>
+  <div id="historial-empty" class="empty" style="display:none">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3>Sin solicitudes registradas</h3>
+    <p>Las solicitudes aparecerán aquí una vez registradas</p>
+  </div>
+</div>
+
+<!-- ========== DEVOLUCIÓN ========== -->
+<div class="page" id="page-devolucion">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Devolución de Materiales</h1>
+      <p>Art. 8 — Todo excedente debe ser devuelto y registrado</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Registrar devolución</div>
+      <form id="form-devolucion" novalidate>
+        <div class="field">
+          <label class="field-req" for="d-solicitud">Solicitud de origen</label>
+          <select id="d-solicitud" required>
+            <option value="">Seleccionar solicitud...</option>
+          </select>
+          <span class="field-hint">Solo solicitudes con devolución pendiente</span>
+        </div>
+        <div id="d-detalle" style="display:none;margin-top:var(--sp4)"></div>
+        <div class="field" style="margin-top:var(--sp4)">
+          <label class="field-req" for="d-cantidad">Cantidad a devolver</label>
+          <input type="number" id="d-cantidad" placeholder="0" min="0.1" step="0.1" required>
+        </div>
+        <div class="field" style="margin-top:var(--sp4)">
+          <label for="d-estado">Estado del material</label>
+          <select id="d-estado">
+            <option value="bueno">Buen estado</option>
+            <option value="dañado">Con daño / deterioro</option>
+            <option value="parcial">Uso parcial visible</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:var(--sp4)">
+          <label for="d-obs">Observaciones</label>
+          <textarea id="d-obs" rows="2" placeholder="Detalle condiciones del material..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.75"/></svg>
+            Registrar devolución
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">Devoluciones pendientes</div>
+        <div id="dev-pendientes"></div>
+      </div>
+      <div class="alert alert-warn" style="margin-top:var(--sp4)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Art. 8.4 — No devolución = consumo</div>
+          <div class="alert-text">El material no devuelto será considerado consumo definitivo del proyecto.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== STOCK ========== -->
+<div class="page" id="page-stock">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Stock en Bodega</h1>
+      <p>Inventario actual de materiales disponibles</p>
+    </div>
+    <button class="btn btn-secondary" onclick="openAgregarStock()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Agregar material
+    </button>
+  </div>
+
+  <div class="alert alert-info">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="alert-body">
+      <div class="alert-title">Art. 6 y 7.3 — Stock reservado por proyecto</div>
+      <div class="alert-text">Los materiales en stock están destinados a proyectos asignados. No se entregarán como adicionales para otros proyectos.</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Material</th>
+          <th>Especificación</th>
+          <th>Proyecto asignado</th>
+          <th class="td-num">Stock total</th>
+          <th class="td-num">Disponible</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="stock-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== PROCEDIMIENTO ========== -->
+<div class="page" id="page-procedimiento">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Procedimiento</h1>
+      <p>Normativa vigente de gestión de bodega — versión 2025</p>
+    </div>
+  </div>
+
+  <!-- ART 1-2 -->
+  <div class="card">
+    <div style="display:flex;gap:var(--sp4);align-items:flex-start">
+      <div style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--text-sm);flex-shrink:0">1</div>
+      <div>
+        <h2 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--sp2)">Objetivo</h2>
+        <p style="font-size:var(--text-sm);color:var(--tx-m)">Establecer un procedimiento claro y ordenado para la solicitud, entrega, uso y devolución de materiales, fitting y herramientas desde bodega, asegurando la correcta trazabilidad, control de stock y asignación por proyecto.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div style="display:flex;gap:var(--sp4);align-items:flex-start">
+        <div style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--text-sm);flex-shrink:0">2</div>
+        <div>
+          <h2 style="font-size:var(--text-base);font-weight:700;margin-bottom:var(--sp2)">Alcance</h2>
+          <p style="font-size:var(--text-sm);color:var(--tx-m)">Aplica a todo el personal operativo, supervisores, jefe de proyecto y gestores de materiales que soliciten o administren materiales desde bodega.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;gap:var(--sp4);align-items:flex-start">
+        <div style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--text-sm);flex-shrink:0">9</div>
+        <div>
+          <h2 style="font-size:var(--text-base);font-weight:700;margin-bottom:var(--sp2)">Control y Cumplimiento</h2>
+          <p style="font-size:var(--text-sm);color:var(--tx-m)">El incumplimiento podrá generar observaciones internas y ajustes de consumo imputados al proyecto correspondiente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ART 3 -->
+  <div class="card">
+    <h2 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--sp5);display:flex;align-items:center;gap:var(--sp3)">
+      <span style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-sm)">3</span>
+      Responsabilidades
+    </h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:var(--sp4)">
+      <div class="rule-box">
+        <div class="rule-title"><span class="rule-num">R1</span>Solicitante / Supervisor</div>
+        <div class="rule-body">Solicita materiales según requerimiento y devuelve excedentes al término del trabajo.</div>
+      </div>
+      <div class="rule-box">
+        <div class="rule-title"><span class="rule-num">R2</span>Gestor de proyecto</div>
+        <div class="rule-body">Autoriza materiales adicionales no contemplados en el memo original.</div>
+      </div>
+      <div class="rule-box">
+        <div class="rule-title"><span class="rule-num">R3</span>Encargado de bodega</div>
+        <div class="rule-body">Entrega, recibe, mide y registra materiales. Valida estado en devoluciones.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ART 4 -->
+  <div class="card">
+    <h2 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--sp5);display:flex;align-items:center;gap:var(--sp3)">
+      <span style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-sm)">4</span>
+      Solicitud de Materiales
+    </h2>
+    <div class="alert alert-info" style="margin-bottom:var(--sp5)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="alert-body"><div class="alert-text"><strong>Art. 4.1</strong> Toda solicitud debe realizarse por escrito, correo electrónico o formato interno autorizado.</div></div>
+    </div>
+    <p style="font-size:var(--text-sm);font-weight:700;color:var(--tx);margin-bottom:var(--sp3)">Art. 4.2 — La solicitud debe indicar obligatoriamente:</p>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Nombre de proyecto</div>
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Código de material</div>
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Tipo de material</div>
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Diámetro o especificación técnica</div>
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Cantidad exacta requerida</div>
+      <div class="check-item"><div class="check-icon done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>Nombre, firma y fecha del solicitante</div>
+    </div>
+    <div class="prohibit">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--err)"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      <p><strong>Art. 4.3</strong> — No se entregará material sin una solicitud previamente registrada.</p>
+    </div>
+  </div>
+
+  <!-- ART 5 -->
+  <div class="card">
+    <h2 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--sp5);display:flex;align-items:center;gap:var(--sp3)">
+      <span style="min-width:40px;height:40px;border-radius:var(--r-md);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-sm)">5</span>
+      Entrega de Tuberías en Rollo
+    </h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">5.1</div><div class="step-body"><h3>Entrega de rollo completo</h3><p>Cuando se soliciten metros parciales (ej. 39 m de tubería 53 mm), bodega podrá entregar el rollo completo (ej. 50 m) por razones de espacio, tiempo y dificultad operativa.</p></div></div>
+      <div class="step"><div class="step-num">5.2</div><div class="step-body"><h3>Obligación de devolución</h3><p>El solicitante queda obligado a devolver el metraje no utilizado.</p></div></div>
+      <div class="step"><div class="step-num">5.3</div><div class="step-body"><h3>Registro en bodega</h3><p>En el ejemplo: deben devolverse 11 m, los cuales serán medidos y registrados como devolución del proyecto.</p></div></div>
+      <div class="step"><div class="step-num">5.4</div><div class="step-body" style="padding-bottom:0"><h3>No devolución = consumo total</h3><p>La no devolución del excedente será imputada como consumo total del proyecto.</p></div></div>
+    </div>
+  </div>
+
+  <!-- ART 6-7-8 -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:var(--sp4)">
+    <div class="card">
+      <h2 style="font-size:var(--text-base);font-weight:700;margin-bottom:var(--sp4);display:flex;align-items:center;gap:var(--sp2)"><span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);flex-shrink:0">6</span>Uso exclusivo por proyecto</h2>
+      <p style="font-size:var(--text-sm);color:var(--tx-m);margin-bottom:var(--sp3)">Todo material queda asignado exclusivamente al proyecto indicado en la solicitud.</p>
+      <div class="prohibit" style="margin-top:var(--sp3)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--err)"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        <p style="font-size:var(--text-xs)"><strong>Art. 6.2</strong> Prohibido traspasar materiales entre proyectos sin autorización.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:var(--text-base);font-weight:700;margin-bottom:var(--sp4);display:flex;align-items:center;gap:var(--sp2)"><span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);flex-shrink:0">7</span>Materiales adicionales</h2>
+      <p style="font-size:var(--text-sm);color:var(--tx-m);margin-bottom:var(--sp3)">Solicitar con anticipación al gestor → esperar autorización → gestor coordina con Metro Gas u otro proveedor.</p>
+      <div class="prohibit" style="margin-top:var(--sp3)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--err)"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        <p style="font-size:var(--text-xs)"><strong>Art. 7.3</strong> No se entregan adicionales desde stock. Genera descuadre de inventario.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:var(--text-base);font-weight:700;margin-bottom:var(--sp4);display:flex;align-items:center;gap:var(--sp2)"><span style="width:28px;height:28px;border-radius:var(--r-sm);background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);flex-shrink:0">8</span>Devolución de materiales</h2>
+      <p style="font-size:var(--text-sm);color:var(--tx-m);margin-bottom:var(--sp2)">Todo material sobrante debe devolverse indicando: proyecto de origen, tipo y cantidad.</p>
+      <p style="font-size:var(--text-sm);color:var(--tx-m)">El encargado valida estado, mide y registra en sistema.</p>
+      <div class="prohibit" style="margin-top:var(--sp3)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--err)"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        <p style="font-size:var(--text-xs)"><strong>Art. 8.4</strong> Material no devuelto = consumo definitivo del proyecto.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PROYECTOS ========== -->
+<div class="page" id="page-proyectos">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Control de Proyectos</h1>
+      <p>Gestión de materiales por proyecto — Santiago de Chile</p>
+    </div>
+    <button class="btn btn-primary" onclick="abrirNuevoProyecto()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo Proyecto
+    </button>
+  </div>
+
+  <!-- KPIs Proyectos -->
+  <div class="kpi-grid" id="proy-kpi-area"></div>
+
+  <!-- Toolbar filtros -->
+  <div class="card card-sm">
+    <div class="proy-toolbar">
+      <input class="proy-search" id="proy-search" type="search" placeholder="Buscar proyecto, dirección, comuna…" oninput="renderProyectos()">
+      <select class="proy-filter" id="proy-f-gestor" onchange="renderProyectos()">
+        <option value="">Todos los gestores</option>
+        <option>Carlos Nova</option>
+        <option>Miguel Herrera</option>
+        <option>Ricardo Sánchez</option>
+        <option>Tristan Aravena</option>
+        <option>Dennis Cubillos</option>
+        <option>Luis Jara</option>
+        <option>Leonel Betancur</option>
+        <option>Ricardo Cabrera</option>
+      </select>
+      <select class="proy-filter" id="proy-f-tipo" onchange="renderProyectos()">
+        <option value="">Todos los tipos</option>
+        <option>NIC</option><option>COM</option><option>RLO</option>
+        <option>NIN</option><option>RES</option><option>OPR</option>
+      </select>
+      <select class="proy-filter" id="proy-f-estado-sol" onchange="renderProyectos()">
+        <option value="">Todos los estados</option>
+        <option value="Solicitado">Solicitado</option>
+        <option value="Devolución">Devolución</option>
+        <option value="Solicitado Parcial">Solicitado Parcial</option>
+        <option value="Pendiente">Pendiente</option>
+      </select>
+      <select class="proy-filter" id="proy-f-pago" onchange="renderProyectos()">
+        <option value="">Todos los pagos</option>
+        <option value="Si">Pagado</option>
+        <option value="No">Sin pago</option>
+        <option value="PH3">PH3</option>
+      </select>
+      <span class="proy-count" id="proy-count"></span>
+    </div>
+  </div>
+
+  <!-- Tabla desktop -->
+  <div class="table-wrap proy-table-wrap">
+    <table id="proy-table">
+      <thead>
+        <tr>
+          <th class="th-sort" data-col="codigo" onclick="sortProyectos('codigo')">Proyecto <i class="sort-icon"></i></th>
+          <th>Ver</th>
+          <th class="th-sort" data-col="comuna" onclick="sortProyectos('comuna')">Comuna <i class="sort-icon"></i></th>
+          <th>Dirección</th>
+          <th class="th-sort" data-col="gestor" onclick="sortProyectos('gestor')">Gestor <i class="sort-icon"></i></th>
+          <th class="th-sort" data-col="fechaInicio" onclick="sortProyectos('fechaInicio')">Fecha Inicio <i class="sort-icon"></i></th>
+          <th>Tipo</th>
+          <th class="th-sort" data-col="estadoSol" onclick="sortProyectos('estadoSol')">Estado Solicitud <i class="sort-icon"></i></th>
+          <th>Estado Pago</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="proy-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Cards móvil -->
+  <div class="proy-mobile-card" id="proy-mobile"></div>
+</div>
+
+<!-- ========== INV: ENTRADAS ========== -->
+<div class="page" id="page-inv-entradas">
+  <div class="page-hdr">
+    <div class="page-hdr-text"><h1>Entradas</h1><p>Registro de ingreso de materiales al inventario</p></div>
+    <button class="btn btn-primary" onclick="abrirModalEntrada()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Entrada
+    </button>
+  </div>
+  <div class="kpi-grid" id="ent-kpi"></div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="ent-search" type="search" placeholder="Buscar código, descripción, proyecto…" oninput="renderEntradas()">
+      <select class="inv-filter" id="ent-f-tipo" onchange="renderEntradas()">
+        <option value="">Todos los tipos</option>
+        <option value="Venta">Venta</option>
+        <option value="Devolución">Devolución</option>
+        <option value="Reserva">Reserva</option>
+      </select>
+      <select class="inv-filter" id="ent-f-region" onchange="renderEntradas()">
+        <option value="">Todas las regiones</option>
+        <option>RM</option><option>VI</option><option>V</option><option>VII</option><option>VIII</option>
+      </select>
+      <span class="inv-count" id="ent-count"></span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Costo</th>
+      <th>N° Pedido/Venta</th><th>N° Guía</th><th>Fecha</th><th>Tipo</th>
+      <th>Serie Módulo</th><th>Lote</th><th>Fecha Tub.</th><th>Marca</th>
+      <th>Status</th><th>Proyecto</th><th>Región</th><th>N° Factura</th><th></th>
+    </tr></thead><tbody id="ent-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ========== INV: SALIDAS ========== -->
+<div class="page" id="page-inv-salidas">
+  <div class="page-hdr">
+    <div class="page-hdr-text"><h1>Salidas</h1><p>Registro de salida de materiales del inventario</p></div>
+    <button class="btn btn-primary" onclick="abrirModalSalida()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Salida
+    </button>
+  </div>
+  <div class="kpi-grid" id="sal-kpi"></div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="sal-search" type="search" placeholder="Buscar código, descripción, proyecto…" oninput="renderSalidas()">
+      <select class="inv-filter" id="sal-f-proyecto" onchange="renderSalidas()">
+        <option value="">Todos los proyectos</option>
+      </select>
+      <span class="inv-count" id="sal-count"></span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Costo</th>
+      <th>N° Guía</th><th>Fecha</th><th>Lote</th><th>Solicitado</th>
+      <th>Status</th><th>Proyecto</th><th></th>
+    </tr></thead><tbody id="sal-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ========== INV: INVENTARIO ========== -->
+<div class="page" id="page-inv-inventario">
+  <div class="page-hdr">
+    <div class="page-hdr-text"><h1>Inventario</h1><p>Existencias actuales: Entradas − Salidas</p></div>
+  </div>
+  <div class="kpi-grid" id="invent-kpi"></div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="invent-search" type="search" placeholder="Buscar código o descripción…" oninput="renderInventario()">
+      <select class="inv-filter" id="invent-f-exist" onchange="renderInventario()">
+        <option value="">Todas las existencias</option>
+        <option value="ok">Con stock</option>
+        <option value="zero">Sin stock</option>
+      </select>
+      <span class="inv-count" id="invent-count"></span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Código</th><th>Descripción</th><th class="td-num">Entradas</th>
+      <th class="td-num">Salidas</th><th class="td-num">Existencias</th>
+    </tr></thead><tbody id="invent-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ========== INV: CONSOLIDADO ========== -->
+<div class="page" id="page-inv-consolidado">
+  <div class="page-hdr">
+    <div class="page-hdr-text"><h1>Consolidado</h1><p>Vista agrupada por material: entradas, salidas y stock</p></div>
+  </div>
+  <div class="card card-sm" style="margin-bottom:0">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="cons-search" type="search" placeholder="Buscar código o descripción…" oninput="renderConsolidado()">
+      <span class="inv-count" id="cons-count"></span>
+    </div>
+  </div>
+  <div class="cons-wrap" id="cons-wrap"></div>
+</div>
+
+<!-- ========== INV: FACTURAS X REGIÓN ========== -->
+<div class="page" id="page-inv-facturas">
+  <div class="page-hdr">
+    <div class="page-hdr-text"><h1>Facturas x Región</h1><p>Facturas agrupadas por proyecto y región</p></div>
+    <button class="btn btn-primary" onclick="abrirModalFactura()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva Factura
+    </button>
+  </div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="fact-search" type="search" placeholder="Buscar proyecto, factura, guía…" oninput="renderFacturas()">
+      <select class="inv-filter" id="fact-f-region" onchange="renderFacturas()">
+        <option value="">Todas las regiones</option>
+        <option>RM</option><option>VI</option><option>V</option><option>VII</option><option>VIII</option>
+      </select>
+      <span class="inv-count" id="fact-count"></span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Proyecto</th><th>Región</th><th>N° Factura</th><th>Fecha</th><th>N° Guía</th><th></th>
+    </tr></thead><tbody id="fact-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ========== SEGUIMIENTO MATERIALES ========== -->
+<div class="seg-page" id="page-seguimiento">
+  <div>
+    <button class="seg-back-btn" onclick="navigate('proyectos')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver a Proyectos
+    </button>
+  </div>
+
+  <!-- Header proyecto -->
+  <div class="seg-header">
+    <div class="seg-title-row">
+      <div class="seg-proyecto-code" id="seg-codigo-display">—</div>
+      <div style="display:flex;gap:var(--sp2);margin-left:auto;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="abrirModalMaterial()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar material
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="abrirModalFecha()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Gestionar fechas
+        </button>
+      </div>
+    </div>
+    <div class="seg-meta" id="seg-meta-area"></div>
+  </div>
+
+  <!-- KPIs resumen -->
+  <div class="seg-resumen" id="seg-resumen-area"></div>
+
+  <!-- Tabla materiales -->
+  <div class="seg-table-wrap">
+    <table class="seg-table">
+      <thead id="seg-thead"></thead>
+      <tbody id="seg-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODAL DETALLE PROYECTO (simple, desde lista) -->
+<div class="modal-overlay" id="modal-detalle-proyecto">
+  <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="modal-det-title">
+    <div class="modal-hdr">
+      <h2 id="modal-det-title">Detalle de Proyecto</h2>
+      <button class="icon-btn" onclick="closeModal('modal-detalle-proyecto')" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-det-body"></div>
+    <div class="form-actions" style="margin-top:var(--sp6)">
+      <button class="btn btn-secondary" onclick="closeModal('modal-detalle-proyecto')">Cerrar</button>
+      <button class="btn btn-primary" id="det-edit-btn">Editar proyecto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR / EDITAR MATERIAL -->
+<div class="modal-overlay" id="modal-material">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-mat-title">
+    <div class="modal-hdr">
+      <h2 id="modal-mat-title">Agregar material</h2>
+      <button class="icon-btn" onclick="closeModal('modal-material')" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-material" novalidate>
+      <input type="hidden" id="mat-edit-idx">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-req" for="mat-codigo">Código</label>
+          <input type="text" id="mat-codigo" placeholder="Ej: 101624" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="mat-cat">Categoría</label>
+          <select id="mat-cat" required>
+            <option value="">Seleccionar...</option>
+            <option value="C/U">C/U — Por unidad</option>
+            <option value="MLI">MLI — Metro lineal</option>
+            <option value="MTS">MTS — Metro</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label class="field-req" for="mat-desc">Descripción</label>
+          <input type="text" id="mat-desc" placeholder="Ej: Tapping Tee PE 50-25 mm" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="mat-cantidad">Cantidad</label>
+          <input type="number" id="mat-cantidad" placeholder="Ej: 1" min="0" step="0.1" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="mat-rv">Reserva / Venta</label>
+          <select id="mat-rv" required>
+            <option value="">Seleccionar...</option>
+            <option value="Reserva">Reserva</option>
+            <option value="Venta">Venta</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mat-stock">Stock</label>
+          <input type="number" id="mat-stock" placeholder="0" min="0" step="0.1" value="0">
+        </div>
+      </div>
+      <div style="margin-top:var(--sp5)">
+        <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m);margin-bottom:var(--sp3)">Valores por columna de entrega</div>
+        <div id="mat-fechas-inputs" style="display:flex;flex-direction:column;gap:var(--sp3)"></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="mat-submit-btn">Agregar material</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-material')">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="mat-delete-btn" style="display:none;margin-left:auto" onclick="eliminarMaterial()">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL GESTIONAR FECHAS -->
+<div class="modal-overlay" id="modal-fechas">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-fec-title">
+    <div class="modal-hdr">
+      <h2 id="modal-fec-title">Gestionar columnas de entrega</h2>
+      <button class="icon-btn" onclick="closeModal('modal-fechas')" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="margin-bottom:var(--sp4)">
+      <div style="font-size:var(--text-xs);color:var(--tx-m);margin-bottom:var(--sp3)">Columnas de entrega actuales:</div>
+      <div id="fechas-list" style="display:flex;flex-direction:column;gap:var(--sp2)"></div>
+    </div>
+    <div class="divider"></div>
+    <div style="margin-top:var(--sp4)">
+      <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-m);margin-bottom:var(--sp3)">Agregar nueva columna de entrega</div>
+      <div style="display:flex;gap:var(--sp3)">
+        <div class="field" style="flex:1"><label for="nueva-fecha">Fecha de entrega</label><input type="date" id="nueva-fecha"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="agregarFechaCol()">Agregar</button></div>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:var(--sp4)">
+      <button class="btn btn-secondary" onclick="closeModal('modal-fechas')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO / EDITAR PROYECTO -->
+<div class="modal-overlay" id="modal-nuevo-proyecto">
+  <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="modal-np-title">
+    <div class="modal-hdr">
+      <h2 id="modal-np-title">Nuevo Proyecto</h2>
+      <button class="icon-btn" onclick="closeModal('modal-nuevo-proyecto')" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-nuevo-proyecto" novalidate>
+      <input type="hidden" id="np-edit-id">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-req" for="np-codigo">Código de proyecto</label>
+          <input type="text" id="np-codigo" placeholder="Ej: NIC-N-13820-ET01" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="np-comuna">Comuna</label>
+          <select id="np-comuna" required>
+            <option value="">Seleccionar...</option>
+            <option>Cerrillos</option><option>Cerro Navia</option><option>Colina</option>
+            <option>Conchalí</option><option>El Bosque</option><option>El Monte</option>
+            <option>Estación Central</option><option>Huechuraba</option><option>Independencia</option>
+            <option>La Cisterna</option><option>La Florida</option><option>La Granja</option>
+            <option>La Pintana</option><option>La Reina</option><option>Lampa</option>
+            <option>Las Condes</option><option>Lo Barnechea</option><option>Lo Espejo</option>
+            <option>Lo Prado</option><option>Macul</option><option>Maipú</option>
+            <option>Melipilla</option><option>Ñuñoa</option><option>Padre Hurtado</option>
+            <option>Peñaflor</option><option>Peñalolén</option><option>Providencia</option>
+            <option>Pudahuel</option><option>Puente Alto</option><option>Quilicura</option>
+            <option>Quinta Normal</option><option>Rancagua</option><option>Recoleta</option>
+            <option>Renca</option><option>San Bernardo</option><option>San Joaquín</option>
+            <option>San Miguel</option><option>San Ramón</option><option>Santiago</option>
+            <option>Talagante</option><option>Vitacura</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label class="field-req" for="np-direccion">Dirección</label>
+          <input type="text" id="np-direccion" placeholder="Ej: AV. LA MONTAÑA 3650-80B CASA 138" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="np-gestor">Gestor</label>
+          <select id="np-gestor" required>
+            <option value="">Seleccionar...</option>
+            <option>Carlos Nova</option>
+            <option>Miguel Herrera</option>
+            <option>Ricardo Sánchez</option>
+            <option>Tristan Aravena</option>
+            <option>Dennis Cubillos</option>
+            <option>Luis Jara</option>
+            <option>Leonel Betancur</option>
+            <option>Ricardo Cabrera</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-req" for="np-fecha">Fecha de inicio</label>
+          <input type="date" id="np-fecha" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="np-tipo">Tipo de proyecto</label>
+          <select id="np-tipo" required>
+            <option value="">Seleccionar...</option>
+            <option>NIC</option><option>COM</option><option>RLO</option>
+            <option>NIN</option><option>RES</option><option>OPR</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-req" for="np-estado-sol">Estado solicitud materiales</label>
+          <select id="np-estado-sol" required>
+            <option value="">Seleccionar...</option>
+            <option>Solicitado</option>
+            <option>Devolución</option>
+            <option>Solicitado Parcial</option>
+            <option>Pendiente</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="np-pago">Estado de pago</label>
+          <select id="np-pago">
+            <option value="">Sin pago</option>
+            <option value="Si">Pagado (Sí)</option>
+            <option value="PH3">PH3</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label for="np-obs">Observaciones</label>
+          <textarea id="np-obs" rows="2" placeholder="Notas adicionales del proyecto..."></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="np-submit-btn">Guardar proyecto</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-nuevo-proyecto')">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="np-delete-btn" style="display:none;margin-left:auto" onclick="eliminarProyecto()">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR ENTRADA -->
+<div class="modal-overlay" id="modal-entrada">
+  <div class="modal modal-lg" role="dialog" aria-modal="true">
+    <div class="modal-hdr">
+      <h2 id="modal-ent-title">Nueva Entrada</h2>
+      <button class="icon-btn" onclick="closeModal('modal-entrada')" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-entrada" novalidate>
+      <input type="hidden" id="ent-edit-idx">
+      <div class="form-grid">
+        <div class="field"><label class="field-req" for="ent-codigo">Código</label><input type="text" id="ent-codigo" placeholder="Ej: 302065" required></div>
+        <div class="field" style="grid-column:1/-1"><label class="field-req" for="ent-desc">Descripción</label><input type="text" id="ent-desc" placeholder="Ej: Tubería PE80 110mm Tira" required></div>
+        <div class="field"><label class="field-req" for="ent-cantidad">Cantidad</label><input type="number" id="ent-cantidad" placeholder="0" min="0" step="0.01" required></div>
+        <div class="field"><label for="ent-costo">Costo ($)</label><input type="number" id="ent-costo" placeholder="0" min="0" step="1"></div>
+        <div class="field"><label for="ent-npedido">N° Pedido / N° Venta</label><input type="text" id="ent-npedido" placeholder="Ej: 4500519765"></div>
+        <div class="field"><label for="ent-nguia">N° Guía</label><input type="text" id="ent-nguia" placeholder="Ej: 3567638"></div>
+        <div class="field"><label class="field-req" for="ent-fecha">Fecha</label><input type="date" id="ent-fecha" required></div>
+        <div class="field"><label for="ent-tipo">Tipo</label>
+          <select id="ent-tipo"><option value="">—</option><option>Venta</option><option>Devolución</option><option>Reserva</option></select>
+        </div>
+        <div class="field"><label for="ent-serie">Serie Módulo</label><input type="text" id="ent-serie" placeholder="Ej: G-011-01-44551"></div>
+        <div class="field"><label for="ent-lote">Lote</label><input type="text" id="ent-lote" placeholder="Fecha de lote"></div>
+        <div class="field"><label for="ent-fecha-tub">Fecha Tub.</label><input type="date" id="ent-fecha-tub"></div>
+        <div class="field"><label for="ent-marca">Marca</label><input type="text" id="ent-marca" placeholder="Ej: TEHMCO"></div>
+        <div class="field"><label for="ent-status">Status</label><input type="text" id="ent-status" placeholder="Status"></div>
+        <div class="field"><label for="ent-proyecto">Proyecto</label><input type="text" id="ent-proyecto" placeholder="Ej: RES-03027"></div>
+        <div class="field"><label for="ent-region">Región</label>
+          <select id="ent-region"><option value="">—</option><option>RM</option><option>VI</option><option>V</option><option>VII</option><option>VIII</option></select>
+        </div>
+        <div class="field"><label for="ent-nfactura">N° Factura</label><input type="text" id="ent-nfactura" placeholder="Ej: 01390220"></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="ent-submit-btn">Guardar entrada</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-entrada')">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="ent-delete-btn" style="display:none;margin-left:auto" onclick="eliminarEntrada()">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR SALIDA -->
+<div class="modal-overlay" id="modal-salida">
+  <div class="modal modal-lg" role="dialog" aria-modal="true">
+    <div class="modal-hdr">
+      <h2 id="modal-sal-title">Nueva Salida</h2>
+      <button class="icon-btn" onclick="closeModal('modal-salida')" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-salida" novalidate>
+      <input type="hidden" id="sal-edit-idx">
+      <div class="form-grid">
+        <div class="field"><label class="field-req" for="sal-codigo">Código</label><input type="text" id="sal-codigo" placeholder="Ej: 303345" required></div>
+        <div class="field" style="grid-column:1/-1"><label class="field-req" for="sal-desc">Descripción</label><input type="text" id="sal-desc" placeholder="Ej: Copla PE100 050mm EF" required></div>
+        <div class="field"><label class="field-req" for="sal-cantidad">Cantidad</label><input type="number" id="sal-cantidad" placeholder="0" min="0" step="0.01" required></div>
+        <div class="field"><label for="sal-costo">Costo ($)</label><input type="number" id="sal-costo" placeholder="0" min="0" step="1"></div>
+        <div class="field"><label for="sal-nguia">N° Guía</label><input type="text" id="sal-nguia" placeholder="Ej: 431"></div>
+        <div class="field"><label class="field-req" for="sal-fecha">Fecha</label><input type="date" id="sal-fecha" required></div>
+        <div class="field"><label for="sal-lote">Lote</label><input type="text" id="sal-lote" placeholder="Lote"></div>
+        <div class="field"><label for="sal-solicitado">Solicitado por</label><input type="text" id="sal-solicitado" placeholder="Ej: Luis Pincheira"></div>
+        <div class="field"><label for="sal-status">Status</label><input type="text" id="sal-status" placeholder="Status"></div>
+        <div class="field"><label class="field-req" for="sal-proyecto">Proyecto</label><input type="text" id="sal-proyecto" placeholder="Ej: RLO-13621" required></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="sal-submit-btn">Guardar salida</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-salida')">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="sal-delete-btn" style="display:none;margin-left:auto" onclick="eliminarSalida()">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR FACTURA -->
+<div class="modal-overlay" id="modal-factura">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-hdr">
+      <h2 id="modal-fact-title">Nueva Factura</h2>
+      <button class="icon-btn" onclick="closeModal('modal-factura')" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-factura" novalidate>
+      <input type="hidden" id="fact-edit-idx">
+      <div class="form-grid">
+        <div class="field"><label class="field-req" for="fact-proyecto">Proyecto</label><input type="text" id="fact-proyecto" placeholder="Ej: COM-13485" required></div>
+        <div class="field"><label class="field-req" for="fact-region">Región</label>
+          <select id="fact-region" required><option value="">Seleccionar...</option><option>RM</option><option>VI</option><option>V</option><option>VII</option><option>VIII</option></select>
+        </div>
+        <div class="field"><label class="field-req" for="fact-nfactura">N° Factura</label><input type="text" id="fact-nfactura" placeholder="Ej: 1374846" required></div>
+        <div class="field"><label class="field-req" for="fact-fecha">Fecha</label><input type="date" id="fact-fecha" required></div>
+        <div class="field"><label for="fact-nguia">N° Guía</label><input type="text" id="fact-nguia" placeholder="Ej: 3566556"></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="fact-submit-btn">Guardar factura</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-factura')">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="fact-delete-btn" style="display:none;margin-left:auto" onclick="eliminarFactura()">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-stock">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-stock-title">
+    <div class="modal-hdr">
+      <h2 id="modal-stock-title">Agregar material al stock</h2>
+      <button class="icon-btn" onclick="closeModal('modal-stock')" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-stock" novalidate>
+      <div class="form-grid">
+        <div class="field"><label class="field-req" for="ms-codigo">Código</label><input type="text" id="ms-codigo" placeholder="TUB-PE-053" required></div>
+        <div class="field"><label class="field-req" for="ms-nombre">Nombre / tipo</label><input type="text" id="ms-nombre" placeholder="Tubería PE rollo" required></div>
+        <div class="field"><label class="field-req" for="ms-spec">Especificación</label><input type="text" id="ms-spec" placeholder="53 mm SDR 11" required></div>
+        <div class="field"><label class="field-req" for="ms-proyecto">Proyecto asignado</label><input type="text" id="ms-proyecto" placeholder="Proyecto Norte" required></div>
+        <div class="field"><label class="field-req" for="ms-total">Cantidad total</label><input type="number" id="ms-total" placeholder="100" min="1" step="0.1" required></div>
+        <div class="field"><label class="field-req" for="ms-disp">Cantidad disponible</label><input type="number" id="ms-disp" placeholder="100" min="0" step="0.1" required></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-stock')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST AREA -->
+<div class="toast-area" id="toasts" aria-live="polite"></div>
+
+<script>
+// ===== STATE =====
+let solicitudes = [
+  {id:'SOL-001',fecha:'2025-04-01',proyecto:'Proyecto Norte',codigo:'TUB-PE-053',tipo:'Tubería PE rollo',diametro:'53 mm SDR 11',solicitado:39,entregado:50,solicitante:'Carlos Muñoz',obs:'',estado:'pendiente-dev',devuelto:0},
+  {id:'SOL-002',fecha:'2025-04-02',proyecto:'Proyecto Sur',codigo:'FIT-COD-025',tipo:'Fitting / accesorios',diametro:'25 mm',solicitado:12,entregado:12,solicitante:'Ana González',obs:'',estado:'cerrado',devuelto:0},
+  {id:'SOL-003',fecha:'2025-04-03',proyecto:'Proyecto Este',codigo:'TUB-PE-032',tipo:'Tubería PE rollo',diametro:'32 mm SDR 11',solicitado:22,entregado:50,solicitante:'Pedro Rojas',obs:'Urgente',estado:'pendiente-dev',devuelto:0},
+];
+let stock = [
+  {codigo:'TUB-PE-053',nombre:'Tubería PE rollo',spec:'53 mm SDR 11',proyecto:'Proyecto Norte',total:200,disponible:100},
+  {codigo:'TUB-PE-032',nombre:'Tubería PE rollo',spec:'32 mm SDR 11',proyecto:'Proyecto Este',total:150,disponible:80},
+  {codigo:'FIT-COD-025',nombre:'Fitting codo',spec:'25 mm',proyecto:'Proyecto Sur',total:50,disponible:26},
+  {codigo:'VAL-BLQ-050',nombre:'Válvula de bola',spec:'50 mm',proyecto:'Proyecto Norte',total:10,disponible:3},
+];
+let nextId = 4;
+
+// ===== NAVIGATION =====
+function navigate(page) {
+  document.querySelectorAll('.page,.seg-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pageEl=document.getElementById('page-'+page)||document.getElementById('seg-page-'+page);
+  if(pageEl) pageEl.classList.add('active');
+  const navEl=document.querySelector('[data-nav="'+page+'"]');
+  if(navEl) navEl.classList.add('active');
+  else { const pEl=document.querySelector('[data-nav="proyectos"]'); if(pEl) pEl.classList.add('active'); }
+  const titles={dashboard:'Dashboard',solicitudes:'Nueva Solicitud',historial:'Historial',devolucion:'Devolución',stock:'Stock Bodega',procedimiento:'Procedimiento',proyectos:'Control de Proyectos',seguimiento:'Seguimiento de Materiales','inv-entradas':'Entradas','inv-salidas':'Salidas','inv-inventario':'Inventario','inv-consolidado':'Consolidado','inv-facturas':'Facturas x Región'};
+  document.getElementById('page-title').textContent=titles[page]||'';
+  if(page==='dashboard')renderDashboard();
+  if(page==='historial')renderHistorial();
+  if(page==='devolucion')renderDevolucion();
+  if(page==='stock')renderStock();
+  if(page==='proyectos'){renderProyectosKPI();renderProyectos();}
+  if(page==='inv-entradas'){renderEntradas();}
+  if(page==='inv-salidas'){renderSalidas();}
+  if(page==='inv-inventario'){renderInventario();}
+  if(page==='inv-consolidado'){renderConsolidado();}
+  if(page==='inv-facturas'){renderFacturas();}
+}
+document.querySelectorAll('[data-nav]').forEach(btn=>{
+  btn.addEventListener('click',()=>navigate(btn.dataset.nav));
+});
+
+// ===== THEME =====
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  const moon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const sun='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  t.innerHTML=d==='dark'?sun:moon;
+  t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);t.innerHTML=d==='dark'?sun:moon;});
+})();
+
+// ===== TOAST =====
+function toast(msg,type='ok'){
+  const area=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast';
+  el.style.background=type==='ok'?'var(--ok)':type==='err'?'var(--err)':'var(--warn)';
+  el.style.color='#fff';
+  el.textContent=msg;
+  area.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400)},3200);
+}
+
+// ===== MODAL =====
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openAgregarStock(){openModal('modal-stock')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  const pending=solicitudes.filter(s=>s.estado==='pendiente-dev');
+  const closed=solicitudes.filter(s=>s.estado==='cerrado');
+  const lowStock=stock.filter(s=>(s.disponible/s.total)<0.3);
+  // KPIs
+  document.getElementById('kpi-area').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Total solicitudes</div><div class="kpi-value">${solicitudes.length}</div><div class="kpi-sub">Registradas en el sistema</div></div>
+    <div class="kpi"><div class="kpi-label">Devoluciones pendientes</div><div class="kpi-value">${pending.length}</div><div class="kpi-sub"><span class="kpi-badge badge-warn">${pending.length>0?'Requiere acción':'Al día'}</span></div></div>
+    <div class="kpi"><div class="kpi-label">Solicitudes cerradas</div><div class="kpi-value">${closed.length}</div><div class="kpi-sub">Sin excedentes pendientes</div></div>
+    <div class="kpi"><div class="kpi-label">Materiales stock bajo</div><div class="kpi-value">${lowStock.length}</div><div class="kpi-sub"><span class="kpi-badge ${lowStock.length>0?'badge-err':'badge-ok'}">${lowStock.length>0?'Revisar':'OK'}</span></div></div>
+  `;
+  // Solicitudes recientes
+  const recientes=solicitudes.slice(-3).reverse();
+  const solEl=document.getElementById('dash-solicitudes-list');
+  if(!recientes.length){solEl.innerHTML='<div class="empty" style="padding:var(--sp8)"><p>Sin solicitudes</p></div>';return;}
+  solEl.innerHTML=recientes.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--sp3) 0;border-bottom:1px solid var(--div)">
+      <div>
+        <div style="font-size:var(--text-sm);font-weight:600">${s.id} — ${s.proyecto}</div>
+        <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.tipo} · ${s.solicitado} u/m · ${s.fecha}</div>
+      </div>
+      <span class="tag ${s.estado==='pendiente-dev'?'badge-warn':'badge-ok'}">${s.estado==='pendiente-dev'?'Dev. pendiente':'Cerrado'}</span>
+    </div>
+  `).join('');
+  // Devoluciones
+  const devEl=document.getElementById('dash-devoluciones-list');
+  if(!pending.length){devEl.innerHTML='<div class="empty" style="padding:var(--sp8)"><p>Sin pendientes ✓</p></div>';return;}
+  devEl.innerHTML=pending.map(s=>{
+    const exc=s.entregado-s.solicitado-s.devuelto;
+    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--sp3) 0;border-bottom:1px solid var(--div)">
+      <div>
+        <div style="font-size:var(--text-sm);font-weight:600">${s.proyecto}</div>
+        <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.tipo} · Excedente: <strong>${exc} m/u</strong></div>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="navigate('devolucion')">Devolver</button>
+    </div>`;
+  }).join('');
+  // Stock bajo
+  const stEl=document.getElementById('dash-stock-alert');
+  if(!lowStock.length){stEl.innerHTML='<div class="alert alert-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg><div class="alert-body"><div class="alert-text">Todos los materiales tienen stock suficiente.</div></div></div>';return;}
+  stEl.innerHTML=lowStock.map(s=>{
+    const pct=Math.round(s.disponible/s.total*100);
+    return`<div style="padding:var(--sp3) 0;border-bottom:1px solid var(--div)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:var(--text-sm);font-weight:600">${s.codigo} — ${s.nombre}</span>
+        <span class="tag badge-err">${pct}% disponible</span>
+      </div>
+      <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.proyecto} · ${s.disponible}/${s.total}</div>
+      <div class="stock-bar"><div class="stock-bar-fill ${pct<15?'fill-crit':'fill-warn'}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ===== HISTORIAL =====
+function estadoBadge(s){
+  if(s.estado==='cerrado')return'<span class="tag badge-ok">Cerrado</span>';
+  if(s.estado==='pendiente-dev')return'<span class="tag badge-warn">Dev. pendiente</span>';
+  return'<span class="tag badge-neu">'+s.estado+'</span>';
+}
+function renderHistorial(){
+  const tbody=document.getElementById('historial-tbody');
+  const empty=document.getElementById('historial-empty');
+  if(!solicitudes.length){tbody.innerHTML='';empty.style.display='flex';return;}
+  empty.style.display='none';
+  tbody.innerHTML=[...solicitudes].reverse().map(s=>`
+    <tr>
+      <td>${s.fecha}</td>
+      <td style="font-weight:600">${s.proyecto}</td>
+      <td>${s.tipo}</td>
+      <td style="color:var(--tx-m);font-size:var(--text-xs)">${s.codigo}</td>
+      <td class="td-num">${s.solicitado}</td>
+      <td class="td-num">${s.entregado}</td>
+      <td>${estadoBadge(s)}</td>
+      <td style="color:var(--tx-m)">${s.solicitante}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="verDetalle('${s.id}')">Ver</button></td>
+    </tr>
+  `).join('');
+}
+function verDetalle(id){
+  const s=solicitudes.find(x=>x.id===id);
+  if(!s)return;
+  const exc=s.entregado-s.solicitado;
+  toast(`${s.id}: ${s.proyecto} — ${exc>0?'Excedente '+exc+' m/u':'Sin excedente'}`,s.estado==='cerrado'?'ok':'warn');
+}
+
+// ===== FORMULARIO SOLICITUD =====
+const tipoSel=document.getElementById('s-tipo');
+tipoSel.addEventListener('change',()=>{
+  const notice=document.getElementById('solicitud-tuberia-notice');
+  notice.style.display=tipoSel.value==='Tubería PE rollo'?'block':'none';
+});
+document.getElementById('form-solicitud').addEventListener('submit',e=>{
+  e.preventDefault();
+  const proyecto=document.getElementById('s-proyecto').value.trim();
+  const codigo=document.getElementById('s-codigo').value.trim();
+  const tipo=document.getElementById('s-tipo').value;
+  const diametro=document.getElementById('s-diametro').value.trim();
+  const cantidad=parseFloat(document.getElementById('s-cantidad').value);
+  const solicitante=document.getElementById('s-solicitante').value.trim();
+  const obs=document.getElementById('s-obs').value.trim();
+  if(!proyecto||!codigo||!tipo||!diametro||!cantidad||!solicitante){
+    toast('Complete todos los campos obligatorios','err');return;
+  }
+  const id='SOL-'+String(nextId++).padStart(3,'0');
+  const entregado=tipo==='Tubería PE rollo'?Math.ceil(cantidad/50)*50:cantidad;
+  const s={id,fecha:new Date().toISOString().slice(0,10),proyecto,codigo,tipo,diametro,solicitado:cantidad,entregado,solicitante,obs,estado:entregado>cantidad?'pendiente-dev':'cerrado',devuelto:0};
+  solicitudes.push(s);
+  toast(`Solicitud ${id} registrada correctamente`,'ok');
+  e.target.reset();
+  document.getElementById('solicitud-tuberia-notice').style.display='none';
+  setTimeout(()=>navigate('historial'),800);
+});
+
+// ===== DEVOLUCIÓN =====
+function renderDevolucion(){
+  const sel=document.getElementById('d-solicitud');
+  const pending=solicitudes.filter(s=>s.estado==='pendiente-dev');
+  sel.innerHTML='<option value="">Seleccionar solicitud...</option>'+
+    pending.map(s=>`<option value="${s.id}">${s.id} — ${s.proyecto} (${s.tipo}, exc. ${s.entregado-s.solicitado-s.devuelto} m/u)</option>`).join('');
+  // pendientes list
+  const pEl=document.getElementById('dev-pendientes');
+  if(!pending.length){pEl.innerHTML='<div class="empty" style="padding:var(--sp8)"><p>No hay devoluciones pendientes ✓</p></div>';return;}
+  pEl.innerHTML=pending.map(s=>{
+    const exc=s.entregado-s.solicitado-s.devuelto;
+    return`<div style="padding:var(--sp3) 0;border-bottom:1px solid var(--div)">
+      <div style="font-size:var(--text-sm);font-weight:600">${s.id}</div>
+      <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.proyecto} · ${s.tipo}</div>
+      <div style="font-size:var(--text-xs);color:var(--warn);font-weight:600;margin-top:var(--sp1)">Excedente pendiente: ${exc} m/u</div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('d-solicitud').addEventListener('change',function(){
+  const s=solicitudes.find(x=>x.id===this.value);
+  const det=document.getElementById('d-detalle');
+  if(!s){det.style.display='none';return;}
+  const exc=s.entregado-s.solicitado-s.devuelto;
+  det.style.display='block';
+  det.innerHTML=`<div class="rule-box">
+    <div style="font-size:var(--text-xs);color:var(--tx-m);margin-bottom:var(--sp2)">Detalle de entrega</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp3);font-size:var(--text-xs)">
+      <div><div style="color:var(--tx-f)">Solicitado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.solicitado} m/u</div></div>
+      <div><div style="color:var(--tx-f)">Entregado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.entregado} m/u</div></div>
+      <div><div style="color:var(--tx-f)">A devolver</div><div style="font-weight:700;font-size:var(--text-sm);color:var(--warn)">${exc} m/u</div></div>
+    </div>
+  </div>`;
+  document.getElementById('d-cantidad').value=exc;
+});
+document.getElementById('form-devolucion').addEventListener('submit',e=>{
+  e.preventDefault();
+  const id=document.getElementById('d-solicitud').value;
+  const cant=parseFloat(document.getElementById('d-cantidad').value);
+  const obs=document.getElementById('d-obs').value.trim();
+  if(!id||!cant){toast('Seleccione solicitud e ingrese cantidad','err');return;}
+  const s=solicitudes.find(x=>x.id===id);
+  if(!s)return;
+  s.devuelto+=cant;
+  const exc=s.entregado-s.solicitado-s.devuelto;
+  if(exc<=0)s.estado='cerrado';
+  // Devolver al stock
+  const mat=stock.find(m=>m.codigo===s.codigo);
+  if(mat)mat.disponible=Math.min(mat.total,mat.disponible+cant);
+  toast(`Devolución de ${cant} m/u registrada — ${s.id}`,'ok');
+  e.target.reset();
+  document.getElementById('d-detalle').style.display='none';
+  renderDevolucion();
+});
+
+// ===== STOCK =====
+function renderStock(){
+  const tbody=document.getElementById('stock-tbody');
+  tbody.innerHTML=stock.map(s=>{
+    const pct=Math.round(s.disponible/s.total*100);
+    const cls=pct<15?'badge-err':pct<30?'badge-warn':'badge-ok';
+    const barCls=pct<15?'fill-crit':pct<30?'fill-warn':'fill-ok';
+    return`<tr>
+      <td style="font-size:var(--text-xs);color:var(--tx-m);font-weight:600">${s.codigo}</td>
+      <td style="font-weight:600">${s.nombre}</td>
+      <td style="color:var(--tx-m)">${s.spec}</td>
+      <td>${s.proyecto}</td>
+      <td class="td-num">${s.total}</td>
+      <td class="td-num">
+        <div style="display:flex;align-items:center;gap:var(--sp2);justify-content:flex-end">
+          ${s.disponible}
+          <div style="width:48px"><div class="stock-bar"><div class="stock-bar-fill ${barCls}" style="width:${pct}%"></div></div></div>
+        </div>
+      </td>
+      <td><span class="tag ${cls}">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== MODAL STOCK FORM =====
+document.getElementById('form-stock').addEventListener('submit',e=>{
+  e.preventDefault();
+  const codigo=document.getElementById('ms-codigo').value.trim();
+  const nombre=document.getElementById('ms-nombre').value.trim();
+  const spec=document.getElementById('ms-spec').value.trim();
+  const proyecto=document.getElementById('ms-proyecto').value.trim();
+  const total=parseFloat(document.getElementById('ms-total').value);
+  const disp=parseFloat(document.getElementById('ms-disp').value);
+  if(!codigo||!nombre||!spec||!proyecto||!total||isNaN(disp)){toast('Complete todos los campos','err');return;}
+  stock.push({codigo,nombre,spec,proyecto,total,disponible:disp});
+  toast('Material agregado al stock','ok');
+  e.target.reset();
+  closeModal('modal-stock');
+  renderStock();
+});
+
+// ===== PROYECTOS STATE =====
+let proyectos = [
+  {id:'p1',codigo:'NIC-N-13820-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650-80B CASA 138',gestor:'Carlos Nova',fechaInicio:'2025-11-24',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p2',codigo:'NIC-N-13821-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3560-78B CASA 140',gestor:'Carlos Nova',fechaInicio:'2025-11-26',tipo:'NIC',estadoSol:'Devolución',pago:'',obs:''},
+  {id:'p3',codigo:'NIC-N-13822-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650-77B CASA 141',gestor:'Carlos Nova',fechaInicio:'2025-12-01',tipo:'NIC',estadoSol:'Devolución',pago:'',obs:''},
+  {id:'p4',codigo:'NIC-N-13823-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650-76B CASA 142',gestor:'Carlos Nova',fechaInicio:'2025-12-01',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p5',codigo:'COM-N-13838-ET01',comuna:'Santiago',direccion:'GENERAL BAQUEDANO 762',gestor:'Miguel Herrera',fechaInicio:'2025-12-03',tipo:'COM',estadoSol:'Devolución',pago:'',obs:''},
+  {id:'p6',codigo:'NIC-N-13824-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650-75B CASA 143',gestor:'Carlos Nova',fechaInicio:'2025-12-03',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p7',codigo:'NIC-N-13825-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650-46B CASA 148',gestor:'Carlos Nova',fechaInicio:'2025-12-03',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p8',codigo:'NIC-N-13815-ET01',comuna:'Lampa',direccion:'AV. LA MONTAÑA 3650 CASA 45B',gestor:'Tristan Aravena',fechaInicio:'2025-12-09',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p9',codigo:'RLO-N-13829-ET01',comuna:'Puente Alto',direccion:'AV. SAN CARLOS 461',gestor:'Tristan Aravena',fechaInicio:'2025-12-09',tipo:'RLO',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p10',codigo:'COM-N-13485-ET01',comuna:'Maipú',direccion:'AV. AMERICO VESPUCIO 1677',gestor:'Ricardo Sánchez',fechaInicio:'2025-12-15',tipo:'COM',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p11',codigo:'NIC-N-13853-ET01',comuna:'Vitacura',direccion:'VIA MORADA 6480 - SITIO 3',gestor:'Carlos Nova',fechaInicio:'2025-12-18',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p12',codigo:'NIN-N-R0093-ET01',comuna:'Rancagua',direccion:'AV. CACHAPOAL 228',gestor:'Ricardo Cabrera',fechaInicio:'2025-12-22',tipo:'NIC',estadoSol:'Solicitado Parcial',pago:'',obs:''},
+  {id:'p13',codigo:'NIC-N-13875-ET01',comuna:'Colina',direccion:'RIO RIN 78-B18',gestor:'Carlos Nova',fechaInicio:'2025-12-22',tipo:'NIC',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p14',codigo:'RLO-N-13598-ET01',comuna:'Colina',direccion:'SANTA ELENA 2230',gestor:'Tristan Aravena',fechaInicio:'2025-12-29',tipo:'RLO',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p15',codigo:'RLO-N-08633-ET06',comuna:'Cerrillos',direccion:'CALLE FERNÁNDEZ ALBANO S/N',gestor:'Tristan Aravena',fechaInicio:'2025-12-29',tipo:'RLO',estadoSol:'Solicitado Parcial',pago:'',obs:''},
+  {id:'p16',codigo:'NIN-N-R0096-ET01',comuna:'Rancagua',direccion:'LOS TILOS EX CALLE REPUBLICA DOMINICANA',gestor:'Ricardo Cabrera',fechaInicio:'2026-01-05',tipo:'COM',estadoSol:'Solicitado Parcial',pago:'',obs:''},
+  {id:'p17',codigo:'NIC-N-13861-ET01',comuna:'Las Condes',direccion:'FELIPE II 4286',gestor:'Carlos Nova',fechaInicio:'2026-01-05',tipo:'COM',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p18',codigo:'COM-N-13853-ET01',comuna:'Santiago',direccion:'MARCOLETA 432',gestor:'Miguel Herrera',fechaInicio:'2026-01-07',tipo:'RES',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p19',codigo:'COM-N-13912-ET01',comuna:'Providencia',direccion:'SANTA ISABEL 0202',gestor:'Dennis Cubillos',fechaInicio:'2026-01-07',tipo:'COM',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p20',codigo:'RES-N-03094-ET01',comuna:'La Florida',direccion:'AV. VICUÑA MACKENNA - DON PEPE - PJE GRANADA - ARAGON',gestor:'Luis Jara',fechaInicio:'2026-01-08',tipo:'NIN',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p21',codigo:'COM-N-13840-ET01',comuna:'Santiago',direccion:'ENRIQUE MAC IVER 424',gestor:'Miguel Herrera',fechaInicio:'2026-01-12',tipo:'OPR',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p22',codigo:'RES-N-03095-ET01',comuna:'La Cisterna',direccion:'VARIAS',gestor:'Luis Jara',fechaInicio:'2026-01-12',tipo:'COM',estadoSol:'Solicitado',pago:'PH3',obs:''},
+  {id:'p23',codigo:'NIN-N-13410-ET01',comuna:'Conchalí',direccion:'BARON DE JURAS REALES 3020',gestor:'Ricardo Sánchez',fechaInicio:'2026-01-13',tipo:'NIN',estadoSol:'Solicitado',pago:'',obs:''},
+  {id:'p24',codigo:'NIN-N-13822-ET01',comuna:'Santiago',direccion:'AV. SANTA ROSA 36',gestor:'Miguel Herrera',fechaInicio:'2026-01-14',tipo:'NIN',estadoSol:'Solicitado',pago:'Si',obs:''},
+  {id:'p25',codigo:'NIN-N-13537-ET01',comuna:'Santiago',direccion:'SANTA VICTORIA 155',gestor:'Miguel Herrera',fechaInicio:'2026-01-19',tipo:'NIN',estadoSol:'Solicitado',pago:'Si',obs:''},
+];
+let nextProyId = 26;
+let proySort = {col:'fechaInicio',dir:'desc'};
+let editingProyId = null;
+
+// ===== PROYECTOS KPI =====
+function renderProyectosKPI(){
+  const total=proyectos.length;
+  const dev=proyectos.filter(p=>p.estadoSol==='Devolución').length;
+  const parc=proyectos.filter(p=>p.estadoSol==='Solicitado Parcial').length;
+  const pagados=proyectos.filter(p=>p.pago==='Si').length;
+  document.getElementById('proy-kpi-area').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Total proyectos</div><div class="kpi-value">${total}</div><div class="kpi-sub">Registrados en el sistema</div></div>
+    <div class="kpi"><div class="kpi-label">Devoluciones</div><div class="kpi-value">${dev}</div><div class="kpi-sub"><span class="kpi-badge ${dev>0?'badge-warn':'badge-ok'}">${dev>0?'Requiere acción':'Sin pendientes'}</span></div></div>
+    <div class="kpi"><div class="kpi-label">Solicitud parcial</div><div class="kpi-value">${parc}</div><div class="kpi-sub"><span class="kpi-badge ${parc>0?'badge-info':'badge-ok'}">${parc>0?'En proceso':'Ninguno'}</span></div></div>
+    <div class="kpi"><div class="kpi-label">Pagados</div><div class="kpi-value">${pagados}</div><div class="kpi-sub">de ${total} proyectos</div></div>
+  `;
+}
+
+// ===== ESTADO SOL BADGE =====
+function estadoSolBadge(e){
+  if(e==='Devolución') return`<span class="estado-sol sol-devolucion">⟳ Devolución</span>`;
+  if(e==='Solicitado Parcial') return`<span class="estado-sol sol-parcial">◑ Sol. Parcial</span>`;
+  if(e==='Solicitado') return`<span class="estado-sol sol-solicitado">✓ Solicitado</span>`;
+  return`<span class="estado-sol sol-pendiente">${e||'—'}</span>`;
+}
+function pagoBadge(p){
+  if(p==='Si') return`<span class="pago-badge pago-si">✓ Sí</span>`;
+  if(p==='PH3') return`<span class="pago-badge pago-ph3">PH3</span>`;
+  return`<span class="pago-badge pago-no">—</span>`;
+}
+function comunaCell(c){
+  const dest=['Rancagua'];
+  return dest.includes(c)?`<span class="comuna-highlight">${c}</span>`:c;
+}
+
+// ===== SORT =====
+function sortProyectos(col){
+  if(proySort.col===col) proySort.dir=proySort.dir==='asc'?'desc':'asc';
+  else{proySort.col=col;proySort.dir='asc';}
+  document.querySelectorAll('.th-sort').forEach(th=>{
+    th.classList.remove('asc','desc');
+    if(th.dataset.col===col) th.classList.add(proySort.dir);
+  });
+  renderProyectos();
+}
+
+// ===== RENDER TABLA =====
+function filteredProyectos(){
+  const q=(document.getElementById('proy-search').value||'').toLowerCase();
+  const fg=document.getElementById('proy-f-gestor').value;
+  const ft=document.getElementById('proy-f-tipo').value;
+  const fe=document.getElementById('proy-f-estado-sol').value;
+  const fp=document.getElementById('proy-f-pago').value;
+  let arr=proyectos.filter(p=>{
+    const matchQ=!q||(p.codigo+p.comuna+p.direccion+p.gestor).toLowerCase().includes(q);
+    const matchG=!fg||p.gestor===fg;
+    const matchT=!ft||p.tipo===ft;
+    const matchE=!fe||p.estadoSol===fe;
+    const matchP=!fp||(fp==='No'?!p.pago:p.pago===fp);
+    return matchQ&&matchG&&matchT&&matchE&&matchP;
+  });
+  arr.sort((a,b)=>{
+    let va=a[proySort.col]||'', vb=b[proySort.col]||'';
+    return proySort.dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+  });
+  return arr;
+}
+function renderProyectos(){
+  const arr=filteredProyectos();
+  document.getElementById('proy-count').textContent=`${arr.length} de ${proyectos.length} proyectos`;
+  // Desktop tabla
+  const tbody=document.getElementById('proy-tbody');
+  if(!arr.length){
+    tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;padding:var(--sp10);color:var(--tx-m)">Sin resultados para los filtros aplicados</td></tr>`;
+  } else {
+    tbody.innerHTML=arr.map(p=>`<tr>
+      <td style="font-size:var(--text-xs);font-weight:700;color:var(--tx-m);letter-spacing:.03em">${p.codigo}</td>
+      <td><button class="ver-link" onclick="verProyecto('${p.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>ver</button></td>
+      <td>${comunaCell(p.comuna)}</td>
+      <td style="font-size:var(--text-xs);color:var(--tx-m);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.direccion}">${p.direccion}</td>
+      <td style="white-space:nowrap">${p.gestor}</td>
+      <td style="white-space:nowrap;font-variant-numeric:tabular-nums">${p.fechaInicio}</td>
+      <td><span class="tipo-chip">${p.tipo}</span></td>
+      <td>${estadoSolBadge(p.estadoSol)}</td>
+      <td>${pagoBadge(p.pago)}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="editarProyecto('${p.id}')">Editar</button>
+      </td>
+    </tr>`).join('');
+  }
+  // Mobile cards
+  const mob=document.getElementById('proy-mobile');
+  mob.innerHTML=arr.map(p=>`<div class="mob-card">
+    <div class="mob-card-row">
+      <div>
+        <div class="mob-card-code">${p.codigo}</div>
+        <div class="mob-card-dir">${p.comuna} · ${p.fechaInicio}</div>
+      </div>
+      <span class="tipo-chip">${p.tipo}</span>
+    </div>
+    <div style="font-size:var(--text-xs);color:var(--tx-m)">${p.direccion}</div>
+    <div class="mob-card-row" style="margin-top:var(--sp1)">
+      <span style="font-size:var(--text-xs);color:var(--tx-m)">${p.gestor}</span>
+      ${estadoSolBadge(p.estadoSol)}
+      ${pagoBadge(p.pago)}
+    </div>
+    <div class="mob-card-row" style="margin-top:var(--sp1)">
+      <button class="ver-link" onclick="verProyecto('${p.id}')">Ver detalle</button>
+      <button class="btn btn-ghost btn-sm" onclick="editarProyecto('${p.id}')">Editar</button>
+    </div>
+  </div>`).join('');
+}
+
+// ===== VER DETALLE (simple modal desde lista) =====
+function verProyecto(id){
+  abrirSeguimiento(id);
+}
+
+// ===== SEGUIMIENTO DE MATERIALES =====
+let segProyId = null; // proyecto activo en seguimiento
+
+// Data de materiales por proyecto: proyMateriales[proyId] = { fechas:[], items:[] }
+// fechas: [{fecha, declarado, devuelto, adicional}]  — cada entrega es una columna
+// items: [{codigo, desc, cat, cantidad, rv, stock, vals:{fechaIdx: {entregado, declarado, devuelto, adicional}}}]
+let proyMateriales = {};
+
+// Cargar datos demo para el primer proyecto
+proyMateriales['p1'] = {
+  fechas: [
+    {fecha:'2025-11-26', declarado:'2025-11-27', devuelto:'2025-12-19', adicional:'2025-12-19'}
+  ],
+  items: [
+    {codigo:'101624',desc:'Tapping Tee PE 50-25 mm',cat:'C/U',cantidad:1,rv:'Reserva',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'301099',desc:'Válvula PE100 Dn 25mm',cat:'C/U',cantidad:1,rv:'Reserva',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'301329',desc:'Copla PE100 025mm EF',cat:'C/U',cantidad:4,rv:'Reserva',stock:0,vals:{'0':{entregado:4,declarado:3,devuelto:1,adicional:0}}},
+    {codigo:'300109',desc:'Risers de Acero 3/4" Bsp x 25 mm',cat:'C/U',cantidad:1,rv:'Reserva',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'2003911',desc:'Válvula EFv PE 25 mm Para Tap. Tee',cat:'C/U',cantidad:1,rv:'Reserva',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'301749',desc:'Tubería PE80 025mm Rollo',cat:'MLI',cantidad:3,rv:'Venta',stock:0,vals:{'0':{entregado:3,declarado:2.3,devuelto:0,adicional:0}}},
+    {codigo:'2006391',desc:'Guardallave Fierro Fundido C/Tapa',cat:'C/U',cantidad:1,rv:'Venta',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'302737',desc:'Válvula Bola 3/4" Hi Un Cuerpo Pn5 Arco',cat:'C/U',cantidad:1,rv:'Venta',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'302184',desc:'Tapa Tornillo Cambio de Codigo por: 200848',cat:'C/U',cantidad:1,rv:'Venta',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+    {codigo:'303368',desc:'Cinta Plástica "Línea GN" 30 x 0.1',cat:'MTS',cantidad:3,rv:'Venta',stock:0,vals:{'0':{entregado:3,declarado:4,devuelto:0,adicional:1}}},
+    {codigo:'1002167',desc:'Cable Trazador Cu 14 AWG Aisl. THW Rojo',cat:'MTS',cantidad:3,rv:'Venta',stock:0,vals:{'0':{entregado:3,declarado:3,devuelto:0,adicional:0}}},
+    {codigo:'2007948',desc:'Tubo PVC Hidraulico 110 mm Pn6 Celeste',cat:'MLI',cantidad:1,rv:'Venta',stock:0,vals:{'0':{entregado:1,declarado:1,devuelto:0,adicional:0}}},
+  ]
+};
+
+function getSeg(){return proyMateriales[segProyId]||(proyMateriales[segProyId]={fechas:[],items:[]});}
+
+function abrirSeguimiento(id){
+  segProyId=id;
+  const p=proyectos.find(x=>x.id===id);
+  if(!p)return;
+  // Ensure data bucket
+  if(!proyMateriales[id]) proyMateriales[id]={fechas:[{fecha:p.fechaInicio,declarado:'',devuelto:'',adicional:''}],items:[]};
+  // Header
+  document.getElementById('seg-codigo-display').textContent=p.codigo;
+  document.getElementById('seg-meta-area').innerHTML=`
+    <div class="seg-meta-item"><span class="seg-meta-label">Gestor</span><span class="seg-meta-val">${p.gestor}</span></div>
+    <div class="seg-meta-item"><span class="seg-meta-label">Comuna</span><span class="seg-meta-val">${p.comuna}</span></div>
+    <div class="seg-meta-item"><span class="seg-meta-label">Dirección</span><span class="seg-meta-val" style="font-size:var(--text-xs)">${p.direccion}</span></div>
+    <div class="seg-meta-item"><span class="seg-meta-label">Tipo</span><span class="seg-meta-val"><span class="tipo-chip">${p.tipo}</span></span></div>
+    <div class="seg-meta-item"><span class="seg-meta-label">Estado sol.</span><span class="seg-meta-val">${estadoSolBadge(p.estadoSol)}</span></div>
+    <div class="seg-meta-item"><span class="seg-meta-label">Pago</span><span class="seg-meta-val">${pagoBadge(p.pago)}</span></div>
+  `;
+  // Show page
+  document.querySelectorAll('.page,.seg-page').forEach(pg=>pg.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-seguimiento').classList.add('active');
+  document.querySelector('[data-nav="proyectos"]').classList.add('active');
+  document.getElementById('page-title').textContent='Seguimiento — '+p.codigo;
+  renderSeguimiento();
+}
+
+function renderSeguimiento(){
+  const seg=getSeg();
+  const fechas=seg.fechas;
+  const items=seg.items;
+
+  // KPIs resumen
+  const totalItems=items.length;
+  const totalCant=items.reduce((a,it)=>a+it.cantidad,0);
+  const totalEntregado=items.reduce((a,it)=>fechas.reduce((b,_,fi)=>b+(it.vals[fi]?.entregado||0),0)+a,0);
+  const conDif=items.filter(it=>{const dif=calcDif(it,fechas);return dif!==0;}).length;
+  document.getElementById('seg-resumen-area').innerHTML=`
+    <div class="seg-kpi"><div class="seg-kpi-label">Materiales</div><div class="seg-kpi-val">${totalItems}</div></div>
+    <div class="seg-kpi"><div class="seg-kpi-label">Cant. total</div><div class="seg-kpi-val">${totalCant}</div></div>
+    <div class="seg-kpi"><div class="seg-kpi-label">Entregas</div><div class="seg-kpi-val">${fechas.length}</div></div>
+    <div class="seg-kpi"><div class="seg-kpi-label">Con diferencia</div><div class="seg-kpi-val" style="color:${conDif>0?'var(--err)':'var(--ok)'}">${conDif}</div></div>
+  `;
+
+  // Build thead
+  // Row 1: grupos
+  let th1='<tr>';
+  th1+=`<th colspan="5" style="background:var(--surf-off);color:var(--tx-m);text-align:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.04em;border-right:1px solid var(--div)">SEGUIMIENTO DE ENTREGA DE MATERIALES</th>`;
+  if(fechas.length>0){
+    th1+=`<th colspan="${fechas.length}" style="background:var(--pri);color:#fff;text-align:center;font-size:var(--text-xs);font-weight:700;border-right:1px solid color-mix(in oklch,#fff 20%,transparent)">ENTREGA</th>`;
+  }
+  th1+=`<th style="background:var(--surf-off);color:var(--tx-m);font-size:var(--text-xs);font-weight:700">STOCK</th>`;
+  th1+=`<th style="background:var(--surf-off);color:var(--tx-m);font-size:var(--text-xs);font-weight:700">% ENTREGADO</th>`;
+  fechas.forEach((_,i)=>{
+    th1+=`<th style="background:#7a5900;color:#fff;font-size:10px;font-weight:700;text-align:center">DECLARADO</th>`;
+    th1+=`<th style="background:#4a6000;color:#fff;font-size:10px;font-weight:700;text-align:center">DEVUELTO</th>`;
+    th1+=`<th style="background:#005a5a;color:#fff;font-size:10px;font-weight:700;text-align:center">ADICIONAL</th>`;
+  });
+  th1+=`<th style="background:var(--surf-off);color:var(--tx-m);font-size:var(--text-xs);font-weight:700">DIFERENCIA</th>`;
+  th1+='</tr>';
+
+  // Row 2: sub-headers
+  let th2='<tr>';
+  th2+=`<th class="col-fixed" style="background:var(--surf-off);color:var(--tx-m);text-align:left">Código</th>`;
+  th2+=`<th class="col-fixed" style="background:var(--surf-off);color:var(--tx-m);text-align:left">Descripción</th>`;
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">Cat.</th>`;
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">Cantidad</th>`;
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">Res./Venta</th>`;
+  fechas.forEach((f,i)=>{
+    th2+=`<th style="background:color-mix(in oklch,var(--pri) 15%,var(--surf-off));color:var(--pri);font-weight:700">${f.fecha||'—'}</th>`;
+  });
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">Stock</th>`;
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">%</th>`;
+  fechas.forEach((f,i)=>{
+    th2+=`<th style="background:color-mix(in oklch,#7a5900 12%,var(--surf-off));color:#7a5900">${f.declarado||'—'}</th>`;
+    th2+=`<th style="background:color-mix(in oklch,#4a6000 12%,var(--surf-off));color:#4a6000">${f.devuelto||'—'}</th>`;
+    th2+=`<th style="background:color-mix(in oklch,#005a5a 12%,var(--surf-off));color:#005a5a">${f.adicional||'—'}</th>`;
+  });
+  th2+=`<th style="background:var(--surf-off);color:var(--tx-m)">Dif.</th>`;
+  th2+='</tr>';
+
+  document.getElementById('seg-thead').innerHTML=th1+th2;
+
+  // Tbody
+  if(!items.length){
+    const cols=5+fechas.length+2+(fechas.length*3)+1;
+    document.getElementById('seg-tbody').innerHTML=`<tr><td colspan="${cols}" style="text-align:center;padding:var(--sp10);color:var(--tx-m)">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp3)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--tx-f)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Sin materiales registrados — <button class="btn btn-primary btn-sm" onclick="abrirModalMaterial()">Agregar el primero</button></span>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  document.getElementById('seg-tbody').innerHTML=items.map((it,idx)=>{
+    const totalEnt=fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.entregado)||0),0);
+    const pct=it.cantidad>0?Math.round(totalEnt/it.cantidad*100):0;
+    const pctCls=pct>=100?'':'pct-warn';
+    const dif=calcDif(it,fechas);
+    const difCls=dif>0?'seg-dif-pos':dif<0?'seg-dif-neg':'seg-dif-zero';
+    const catCls=it.cat==='C/U'?'cat-cu':it.cat==='MLI'?'cat-mli':'cat-mts';
+    let row=`<tr>
+      <td class="seg-td-code"><button class="ver-link" onclick="editarMaterial(${idx})">${it.codigo}</button></td>
+      <td class="seg-td-desc" title="${it.desc}">${it.desc}</td>
+      <td class="seg-td-cat"><span class="cat-chip ${catCls}">${it.cat}</span></td>
+      <td class="seg-td-num">${it.cantidad}</td>
+      <td class="seg-td-center"><span class="${it.rv==='Reserva'?'rv-reserva':'rv-venta'}">${it.rv}</span></td>`;
+    fechas.forEach((_,fi)=>{
+      const v=Number(it.vals[fi]?.entregado)||0;
+      row+=`<td class="seg-td-num"><input type="number" value="${v||''}" min="0" step="0.1" style="width:52px;text-align:center;background:transparent;border:none;border-bottom:1px dashed var(--bord);color:var(--tx);font:inherit;outline:none;padding:1px 2px" onchange="actualizarVal(${idx},${fi},'entregado',this.value)" onfocus="this.style.borderColor='var(--pri)'" onblur="this.style.borderColor='var(--bord)'"></td>`;
+    });
+    row+=`<td class="seg-td-num">${it.stock}</td>`;
+    row+=`<td class="seg-td-center"><span class="seg-pct ${pctCls}">${pct}%</span></td>`;
+    fechas.forEach((_,fi)=>{
+      const d=Number(it.vals[fi]?.declarado)||0;
+      const dv=Number(it.vals[fi]?.devuelto)||0;
+      const ad=Number(it.vals[fi]?.adicional)||0;
+      row+=`<td class="seg-td-num"><input type="number" value="${d||''}" min="0" step="0.1" style="width:52px;text-align:center;background:transparent;border:none;border-bottom:1px dashed var(--bord);color:var(--tx);font:inherit;outline:none;padding:1px 2px" onchange="actualizarVal(${idx},${fi},'declarado',this.value)" onfocus="this.style.borderColor='var(--pri)'" onblur="this.style.borderColor='var(--bord)'"></td>`;
+      row+=`<td class="seg-td-num"><input type="number" value="${dv||''}" min="0" step="0.1" style="width:52px;text-align:center;background:transparent;border:none;border-bottom:1px dashed var(--bord);color:var(--tx);font:inherit;outline:none;padding:1px 2px" onchange="actualizarVal(${idx},${fi},'devuelto',this.value)" onfocus="this.style.borderColor='var(--pri)'" onblur="this.style.borderColor='var(--bord)'"></td>`;
+      row+=`<td class="seg-td-num"><input type="number" value="${ad||''}" min="0" step="0.1" style="width:52px;text-align:center;background:transparent;border:none;border-bottom:1px dashed var(--bord);color:var(--tx);font:inherit;outline:none;padding:1px 2px" onchange="actualizarVal(${idx},${fi},'adicional',this.value)" onfocus="this.style.borderColor='var(--pri)'" onblur="this.style.borderColor='var(--bord)'"></td>`;
+    });
+    row+=`<td class="seg-td-num ${difCls}">${dif===0?'0':dif>0?'+'+dif:dif}</td>`;
+    row+='</tr>';
+    return row;
+  }).join('');
+}
+
+function calcDif(it,fechas){
+  const totalEnt=fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.entregado)||0),0);
+  const totalDecl=fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.declarado)||0),0);
+  const totalAd=fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.adicional)||0),0);
+  const totalDev=fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.devuelto)||0),0);
+  // Diferencia = entregado - (declarado - devuelto + adicional)
+  const dif=totalEnt-(totalDecl-totalDev+totalAd);
+  return Math.round(dif*100)/100;
+}
+
+function actualizarVal(itemIdx,fechaIdx,campo,valor){
+  const seg=getSeg();
+  if(!seg.items[itemIdx].vals[fechaIdx]) seg.items[itemIdx].vals[fechaIdx]={entregado:0,declarado:0,devuelto:0,adicional:0};
+  seg.items[itemIdx].vals[fechaIdx][campo]=parseFloat(valor)||0;
+  // Only re-render the KPIs + dif column without full re-render to avoid losing focus
+  // Full re-render on blur is acceptable here for simplicity
+}
+
+// ===== MODAL MATERIAL =====
+function abrirModalMaterial(){
+  const seg=getSeg();
+  document.getElementById('modal-mat-title').textContent='Agregar material';
+  document.getElementById('mat-submit-btn').textContent='Agregar material';
+  document.getElementById('mat-delete-btn').style.display='none';
+  document.getElementById('mat-edit-idx').value='';
+  document.getElementById('form-material').reset();
+  // Build fecha inputs
+  document.getElementById('mat-fechas-inputs').innerHTML=seg.fechas.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:var(--sp3)">
+      <span style="font-size:var(--text-xs);font-weight:700;color:var(--tx-m);min-width:90px">${f.fecha||'Entrega '+(i+1)}</span>
+      <div class="field" style="margin:0"><label style="font-size:10px">Entregado</label><input type="number" id="mf-ent-${i}" placeholder="0" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Declarado</label><input type="number" id="mf-dec-${i}" placeholder="0" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Devuelto</label><input type="number" id="mf-dev-${i}" placeholder="0" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Adicional</label><input type="number" id="mf-adi-${i}" placeholder="0" min="0" step="0.1" style="width:80px"></div>
+    </div>`).join('');
+  openModal('modal-material');
+}
+
+function editarMaterial(idx){
+  const seg=getSeg();
+  const it=seg.items[idx];
+  if(!it)return;
+  document.getElementById('modal-mat-title').textContent='Editar material';
+  document.getElementById('mat-submit-btn').textContent='Guardar cambios';
+  document.getElementById('mat-delete-btn').style.display='';
+  document.getElementById('mat-edit-idx').value=idx;
+  document.getElementById('mat-codigo').value=it.codigo;
+  document.getElementById('mat-desc').value=it.desc;
+  document.getElementById('mat-cat').value=it.cat;
+  document.getElementById('mat-cantidad').value=it.cantidad;
+  document.getElementById('mat-rv').value=it.rv;
+  document.getElementById('mat-stock').value=it.stock||0;
+  document.getElementById('mat-fechas-inputs').innerHTML=seg.fechas.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap">
+      <span style="font-size:var(--text-xs);font-weight:700;color:var(--tx-m);min-width:90px">${f.fecha||'Entrega '+(i+1)}</span>
+      <div class="field" style="margin:0"><label style="font-size:10px">Entregado</label><input type="number" id="mf-ent-${i}" value="${it.vals[i]?.entregado||''}" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Declarado</label><input type="number" id="mf-dec-${i}" value="${it.vals[i]?.declarado||''}" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Devuelto</label><input type="number" id="mf-dev-${i}" value="${it.vals[i]?.devuelto||''}" min="0" step="0.1" style="width:80px"></div>
+      <div class="field" style="margin:0"><label style="font-size:10px">Adicional</label><input type="number" id="mf-adi-${i}" value="${it.vals[i]?.adicional||''}" min="0" step="0.1" style="width:80px"></div>
+    </div>`).join('');
+  openModal('modal-material');
+}
+
+function eliminarMaterial(){
+  const idx=parseInt(document.getElementById('mat-edit-idx').value);
+  const seg=getSeg();
+  seg.items.splice(idx,1);
+  closeModal('modal-material');
+  toast('Material eliminado','warn');
+  renderSeguimiento();
+}
+
+document.getElementById('form-material').addEventListener('submit',e=>{
+  e.preventDefault();
+  const codigo=document.getElementById('mat-codigo').value.trim();
+  const desc=document.getElementById('mat-desc').value.trim();
+  const cat=document.getElementById('mat-cat').value;
+  const cantidad=parseFloat(document.getElementById('mat-cantidad').value)||0;
+  const rv=document.getElementById('mat-rv').value;
+  const stock=parseFloat(document.getElementById('mat-stock').value)||0;
+  if(!codigo||!desc||!cat||!cantidad||!rv){toast('Complete los campos obligatorios','err');return;}
+  const seg=getSeg();
+  const vals={};
+  seg.fechas.forEach((_,i)=>{
+    vals[i]={
+      entregado:parseFloat(document.getElementById('mf-ent-'+i)?.value)||0,
+      declarado:parseFloat(document.getElementById('mf-dec-'+i)?.value)||0,
+      devuelto:parseFloat(document.getElementById('mf-dev-'+i)?.value)||0,
+      adicional:parseFloat(document.getElementById('mf-adi-'+i)?.value)||0,
+    };
+  });
+  const editIdx=document.getElementById('mat-edit-idx').value;
+  if(editIdx!==''){
+    seg.items[parseInt(editIdx)]={codigo,desc,cat,cantidad,rv,stock,vals};
+    toast('Material actualizado','ok');
+  } else {
+    seg.items.push({codigo,desc,cat,cantidad,rv,stock,vals});
+    toast('Material agregado','ok');
+  }
+  closeModal('modal-material');
+  renderSeguimiento();
+});
+
+// ===== MODAL FECHAS =====
+function abrirModalFecha(){
+  const seg=getSeg();
+  renderFechasList();
+  openModal('modal-fechas');
+}
+function renderFechasList(){
+  const seg=getSeg();
+  document.getElementById('fechas-list').innerHTML=seg.fechas.length?seg.fechas.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:var(--sp3);padding:var(--sp2) var(--sp3);background:var(--surf-off);border-radius:var(--r-md)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span style="font-size:var(--text-sm);flex:1">Entrega ${i+1}: <strong>${f.fecha}</strong></span>
+      <span style="font-size:var(--text-xs);color:var(--tx-m)">Dec: ${f.declarado||'—'} · Dev: ${f.devuelto||'—'} · Adic: ${f.adicional||'—'}</span>
+      <button class="btn btn-danger btn-sm" onclick="eliminarFechaCol(${i})">×</button>
+    </div>`).join(''):'<div style="color:var(--tx-m);font-size:var(--text-sm)">Sin columnas de entrega</div>';
+}
+function agregarFechaCol(){
+  const fecha=document.getElementById('nueva-fecha').value;
+  if(!fecha){toast('Seleccione una fecha','err');return;}
+  const seg=getSeg();
+  const newIdx=seg.fechas.length;
+  seg.fechas.push({fecha,declarado:'',devuelto:'',adicional:''});
+  // Add empty vals for all items
+  seg.items.forEach(it=>{it.vals[newIdx]={entregado:0,declarado:0,devuelto:0,adicional:0};});
+  document.getElementById('nueva-fecha').value='';
+  renderFechasList();
+  toast('Columna de entrega agregada','ok');
+}
+function eliminarFechaCol(idx){
+  if(!confirm('¿Eliminar esta columna de entrega? Se perderán los valores.'))return;
+  const seg=getSeg();
+  seg.fechas.splice(idx,1);
+  // Re-index vals
+  seg.items.forEach(it=>{
+    const newVals={};
+    Object.keys(it.vals).forEach(k=>{
+      const ki=parseInt(k);
+      if(ki<idx) newVals[ki]=it.vals[k];
+      else if(ki>idx) newVals[ki-1]=it.vals[k];
+    });
+    it.vals=newVals;
+  });
+  renderFechasList();
+  renderSeguimiento();
+  toast('Columna eliminada','warn');
+}
+
+
+// ===== NUEVO / EDITAR =====
+function editarProyecto(id){
+  const p=proyectos.find(x=>x.id===id);
+  if(!p)return;
+  editingProyId=id;
+  document.getElementById('modal-np-title').textContent='Editar Proyecto';
+  document.getElementById('np-submit-btn').textContent='Guardar cambios';
+  document.getElementById('np-delete-btn').style.display='';
+  document.getElementById('np-edit-id').value=id;
+  document.getElementById('np-codigo').value=p.codigo;
+  document.getElementById('np-comuna').value=p.comuna;
+  document.getElementById('np-direccion').value=p.direccion;
+  document.getElementById('np-gestor').value=p.gestor;
+  document.getElementById('np-fecha').value=p.fechaInicio;
+  document.getElementById('np-tipo').value=p.tipo;
+  document.getElementById('np-estado-sol').value=p.estadoSol;
+  document.getElementById('np-pago').value=p.pago||'';
+  document.getElementById('np-obs').value=p.obs||'';
+  openModal('modal-nuevo-proyecto');
+}
+function eliminarProyecto(){
+  if(!editingProyId)return;
+  if(!confirm('¿Eliminar este proyecto?'))return;
+  proyectos=proyectos.filter(p=>p.id!==editingProyId);
+  closeModal('modal-nuevo-proyecto');
+  toast('Proyecto eliminado','warn');
+  renderProyectosKPI();
+  renderProyectos();
+}
+document.getElementById('form-nuevo-proyecto').addEventListener('submit',e=>{
+  e.preventDefault();
+  const codigo=document.getElementById('np-codigo').value.trim();
+  const comuna=document.getElementById('np-comuna').value;
+  const direccion=document.getElementById('np-direccion').value.trim();
+  const gestor=document.getElementById('np-gestor').value;
+  const fechaInicio=document.getElementById('np-fecha').value;
+  const tipo=document.getElementById('np-tipo').value;
+  const estadoSol=document.getElementById('np-estado-sol').value;
+  const pago=document.getElementById('np-pago').value;
+  const obs=document.getElementById('np-obs').value.trim();
+  if(!codigo||!comuna||!direccion||!gestor||!fechaInicio||!tipo||!estadoSol){
+    toast('Complete todos los campos obligatorios','err');return;
+  }
+  const editId=document.getElementById('np-edit-id').value;
+  if(editId){
+    const idx=proyectos.findIndex(p=>p.id===editId);
+    if(idx>-1) proyectos[idx]={...proyectos[idx],codigo,comuna,direccion,gestor,fechaInicio,tipo,estadoSol,pago,obs};
+    toast('Proyecto actualizado correctamente','ok');
+  } else {
+    proyectos.push({id:'p'+nextProyId++,codigo,comuna,direccion,gestor,fechaInicio,tipo,estadoSol,pago,obs});
+    toast('Proyecto agregado correctamente','ok');
+  }
+  e.target.reset();
+  document.getElementById('np-edit-id').value='';
+  editingProyId=null;
+  closeModal('modal-nuevo-proyecto');
+  renderProyectosKPI();
+  renderProyectos();
+});
+function abrirNuevoProyecto(){
+  document.getElementById('form-nuevo-proyecto').reset();
+  document.getElementById('np-edit-id').value='';
+  document.getElementById('modal-np-title').textContent='Nuevo Proyecto';
+  document.getElementById('np-submit-btn').textContent='Guardar proyecto';
+  document.getElementById('np-delete-btn').style.display='none';
+  editingProyId=null;
+  openModal('modal-nuevo-proyecto');
+}
+// ===== INVENTARIO MODULE STATE =====
+let invEntradas = [
+  {codigo:'302065',desc:'Tubería PE80 110mm Tira',cantidad:480,costo:5084640,npedido:'883642',nguia:'3567639',fecha:'2026-03-18',tipo:'Venta',serie:'G-011-01-44551',lote:'30-07-2025',fechaTub:'2025-07-30',marca:'TEHMCO',status:'',proyecto:'RES-03095',region:'RM',nfactura:'01390220'},
+  {codigo:'302065',desc:'Tubería PE80 110mm Tira',cantidad:552,costo:5847336,npedido:'4500519765',nguia:'3567638',fecha:'2026-03-18',tipo:'Venta',serie:'G-011-01-44551',lote:'13-08-2025',fechaTub:'2025-08-13',marca:'TEHMCO',status:'',proyecto:'RES-03027',region:'RM',nfactura:'01390219'},
+  {codigo:'2002262',desc:'Tubería PE80 050mm Rollo',cantidad:1200,costo:3098400,npedido:'883642',nguia:'3567553',fecha:'2026-03-12',tipo:'Venta',serie:'G-011-01-44548',lote:'04-04-2025',fechaTub:'2025-04-04',marca:'',status:'',proyecto:'RES-03095',region:'RM',nfactura:'01375116'},
+  {codigo:'2002263',desc:'Tubería PE80 063mm Rollo',cantidad:100,costo:373300,npedido:'883642',nguia:'3567554',fecha:'2026-03-12',tipo:'Venta',serie:'G-011-01-44550',lote:'17-04-2025',fechaTub:'2025-04-17',marca:'',status:'',proyecto:'RES-03095',region:'RM',nfactura:'01375116'},
+  {codigo:'2002263',desc:'Tubería PE80 063mm Rollo',cantidad:400,costo:1493200,npedido:'4500519755',nguia:'3567554',fecha:'2026-03-12',tipo:'Venta',serie:'G-011-01-44550',lote:'17-04-2025',fechaTub:'2025-04-17',marca:'',status:'',proyecto:'RLO-12528',region:'RM',nfactura:'01375117'},
+  {codigo:'303368',desc:'Cinta Plástica "Línea GN", 30 x 0.1',cantidad:2000,costo:242000,npedido:'883642',nguia:'3567511',fecha:'2026-03-10',tipo:'Venta',serie:'',lote:'',fechaTub:'',marca:'',status:'',proyecto:'RES-03095',region:'RM',nfactura:'01375103'},
+  {codigo:'1002167',desc:'Cable Trazador Cu 14 AWG Aisl. THW Rojo',cantidad:2000,costo:588000,npedido:'883642',nguia:'3567511',fecha:'2026-03-10',tipo:'Venta',serie:'',lote:'',fechaTub:'',marca:'',status:'',proyecto:'RES-03095',region:'RM',nfactura:'01375103'},
+  {codigo:'301749',desc:'Tubería PE80 025mm Rollo',cantidad:150,costo:114750,npedido:'4500519835',nguia:'3567507',fecha:'2026-03-10',tipo:'Venta',serie:'',lote:'',fechaTub:'',marca:'',status:'',proyecto:'RLO-R0111',region:'VI',nfactura:'01375101'},
+];
+
+let invSalidas = [
+  {codigo:'303345',desc:'Copla PE100 050mm EF',cantidad:2,costo:0,nguia:'431',fecha:'2026-03-19',lote:'',solicitado:'Luis Pincheira',status:'',proyecto:'RLO-13621'},
+  {codigo:'101624',desc:'Tapping Tee PE 50-25 mm',cantidad:1,costo:0,nguia:'431',fecha:'2026-03-19',lote:'',solicitado:'Luis Pincheira',status:'',proyecto:'RLO-13621'},
+  {codigo:'301329',desc:'Copla PE100 025mm EF',cantidad:2,costo:0,nguia:'431',fecha:'2026-03-19',lote:'',solicitado:'Luis Pincheira',status:'',proyecto:'RLO-13621'},
+  {codigo:'302065',desc:'Tubería PE80 110mm Tira',cantidad:120,costo:0,nguia:'463',fecha:'2026-03-19',lote:'',solicitado:'Luis carrasco',status:'',proyecto:'RES-03027'},
+  {codigo:'2002262',desc:'Tubería PE80 050mm Rollo',cantidad:100,costo:0,nguia:'457',fecha:'2026-03-19',lote:'',solicitado:'Gonzalo Villalobos',status:'',proyecto:'RES-03027'},
+  {codigo:'301749',desc:'Tubería PE80 025mm Rollo',cantidad:15,costo:0,nguia:'430',fecha:'2026-03-19',lote:'',solicitado:'Luis Pincheira',status:'',proyecto:'RLO-13621'},
+  {codigo:'301987',desc:'Codo PE100 90° 063mm EF',cantidad:6,costo:0,nguia:'458',fecha:'2026-03-19',lote:'',solicitado:'José Melo',status:'',proyecto:'RLO-06386'},
+  {codigo:'2007948',desc:'Tubo PVC Hidraulico 110 mm Pn6 Celeste',cantidad:1,costo:0,nguia:'260',fecha:'2026-03-19',lote:'',solicitado:'Patricio Silva',status:'',proyecto:'NIC-13876'},
+  {codigo:'301666',desc:'Tapping Tee PE 110-25 mm',cantidad:5,costo:0,nguia:'505',fecha:'2026-03-19',lote:'',solicitado:'José Mallia',status:'',proyecto:'COM-R0198'},
+  {codigo:'301099',desc:'Válvula PE100 Dn 25mm',cantidad:3,costo:0,nguia:'505',fecha:'2026-03-19',lote:'',solicitado:'José Mallia',status:'',proyecto:'COM-R0198'},
+];
+
+let invFacturas = [
+  {proyecto:'COM-13485',region:'RM',nfactura:'1374846',fecha:'2025-12-30',nguia:'3566556'},
+  {proyecto:'COM-13822',region:'RM',nfactura:'1374846',fecha:'2025-12-30',nguia:'3566556'},
+  {proyecto:'COM-13838',region:'RM',nfactura:'1374732',fecha:'2025-11-25',nguia:'3566214'},
+  {proyecto:'COM-13840',region:'RM',nfactura:'1374847',fecha:'2025-12-30',nguia:'3566557'},
+  {proyecto:'COM-13847',region:'RM',nfactura:'1374962',fecha:'2026-01-22',nguia:'3566945'},
+  {proyecto:'COM-13853',region:'RM',nfactura:'1374821',fecha:'2025-12-18',nguia:'3566424'},
+  {proyecto:'EGL-13052',region:'RM',nfactura:'1374942',fecha:'2026-01-21',nguia:'3566915'},
+  {proyecto:'EGL-13052',region:'RM',nfactura:'1374965',fecha:'2026-01-22',nguia:'3566954'},
+  {proyecto:'EGL-13052',region:'RM',nfactura:'1375014',fecha:'2026-02-11',nguia:'3567106'},
+  {proyecto:'NIC-13741',region:'RM',nfactura:'1374941',fecha:'2026-01-20',nguia:'3566893'},
+  {proyecto:'NIC-13741',region:'RM',nfactura:'1374951',fecha:'2026-01-20',nguia:'3566933'},
+  {proyecto:'NIC-13815',region:'RM',nfactura:'1374731',fecha:'2025-11-25',nguia:'3566199'},
+  {proyecto:'NIC-13820',region:'RM',nfactura:'1374726',fecha:'2025-11-25',nguia:'3566194'},
+  {proyecto:'NIC-13820',region:'RM',nfactura:'1374727',fecha:'2025-11-25',nguia:'3566194'},
+  {proyecto:'NIC-13821',region:'RM',nfactura:'1374733',fecha:'2025-11-25',nguia:'3566211'},
+  {proyecto:'NIC-13821',region:'RM',nfactura:'1374734',fecha:'2025-11-25',nguia:'3566213'},
+];
+
+// ===== INVENTARIO: calcula existencias por código =====
+function calcInventario(){
+  const mapa={};
+  invEntradas.forEach(e=>{
+    if(!mapa[e.codigo]) mapa[e.codigo]={codigo:e.codigo,desc:e.desc,entradas:0,salidas:0};
+    mapa[e.codigo].entradas+=Number(e.cantidad)||0;
+  });
+  invSalidas.forEach(s=>{
+    if(!mapa[s.codigo]) mapa[s.codigo]={codigo:s.codigo,desc:s.desc,entradas:0,salidas:0};
+    mapa[s.codigo].salidas+=Number(s.cantidad)||0;
+  });
+  return Object.values(mapa).sort((a,b)=>a.codigo.localeCompare(b.codigo));
+}
+
+// ===== RENDER ENTRADAS =====
+function renderEntradas(){
+  const q=(document.getElementById('ent-search').value||'').toLowerCase();
+  const ft=document.getElementById('ent-f-tipo').value;
+  const fr=document.getElementById('ent-f-region').value;
+  let arr=invEntradas.filter(e=>{
+    const mq=!q||(e.codigo+e.desc+e.proyecto+e.nguia).toLowerCase().includes(q);
+    const mt=!ft||e.tipo===ft;
+    const mr=!fr||e.region===fr;
+    return mq&&mt&&mr;
+  });
+  document.getElementById('ent-count').textContent=`${arr.length} de ${invEntradas.length} registros`;
+  // KPIs
+  const totalCant=invEntradas.reduce((a,e)=>a+(Number(e.cantidad)||0),0);
+  const totalCosto=invEntradas.reduce((a,e)=>a+(Number(e.costo)||0),0);
+  document.getElementById('ent-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Registros</div><div class="kpi-value">${invEntradas.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Total unidades</div><div class="kpi-value">${totalCant.toLocaleString('es-CL')}</div></div>
+    <div class="kpi"><div class="kpi-label">Costo total</div><div class="kpi-value" style="font-size:1.2rem">$${totalCosto.toLocaleString('es-CL')}</div></div>
+    <div class="kpi"><div class="kpi-label">Proyectos</div><div class="kpi-value">${[...new Set(invEntradas.map(e=>e.proyecto).filter(Boolean))].length}</div></div>
+  `;
+  const tbody=document.getElementById('ent-tbody');
+  if(!arr.length){tbody.innerHTML=`<tr><td colspan="17" style="text-align:center;padding:var(--sp8);color:var(--tx-m)">Sin registros</td></tr>`;return;}
+  tbody.innerHTML=arr.map((e,i)=>`<tr>
+    <td class="seg-td-code">${e.codigo}</td>
+    <td style="font-size:var(--text-xs);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${e.desc}">${e.desc}</td>
+    <td class="td-num">${Number(e.cantidad).toLocaleString('es-CL')}</td>
+    <td class="td-num" style="white-space:nowrap">${e.costo?'$'+Number(e.costo).toLocaleString('es-CL'):''}</td>
+    <td style="font-size:var(--text-xs);color:var(--tx-m)">${e.npedido||'—'}</td>
+    <td style="font-size:var(--text-xs);color:var(--tx-m)">${e.nguia||'—'}</td>
+    <td style="white-space:nowrap;font-size:var(--text-xs)">${e.fecha}</td>
+    <td><span class="${e.tipo==='Venta'?'vd-venta':e.tipo==='Devolución'?'vd-dev':'vd-res'}">${e.tipo||'—'}</span></td>
+    <td style="font-size:10px;color:var(--tx-m)">${e.serie||'—'}</td>
+    <td style="font-size:10px;color:var(--tx-m)">${e.lote||'—'}</td>
+    <td style="font-size:10px;color:var(--tx-m)">${e.fechaTub||'—'}</td>
+    <td style="font-size:var(--text-xs)">${e.marca||'—'}</td>
+    <td style="font-size:var(--text-xs)">${e.status||'—'}</td>
+    <td><span class="tipo-chip" style="font-size:10px">${e.proyecto||'—'}</span></td>
+    <td>${e.region?`<span class="fact-region">${e.region}</span>`:'—'}</td>
+    <td style="font-size:var(--text-xs);color:var(--tx-m)">${e.nfactura||'—'}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="editarEntrada(${invEntradas.indexOf(e)})">Editar</button></td>
+  </tr>`).join('');
+}
+
+// ===== RENDER SALIDAS =====
+function renderSalidas(){
+  const q=(document.getElementById('sal-search').value||'').toLowerCase();
+  const fp=document.getElementById('sal-f-proyecto').value;
+  let arr=invSalidas.filter(s=>{
+    const mq=!q||(s.codigo+s.desc+s.proyecto+s.solicitado).toLowerCase().includes(q);
+    const mp=!fp||s.proyecto===fp;
+    return mq&&mp;
+  });
+  document.getElementById('sal-count').textContent=`${arr.length} de ${invSalidas.length} registros`;
+  // populate proyecto filter
+  const sel=document.getElementById('sal-f-proyecto');
+  const proyUnicos=[...new Set(invSalidas.map(s=>s.proyecto).filter(Boolean))].sort();
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos los proyectos</option>'+proyUnicos.map(p=>`<option${p===cur?' selected':''}>${p}</option>`).join('');
+  // KPIs
+  const totalCant=invSalidas.reduce((a,s)=>a+(Number(s.cantidad)||0),0);
+  document.getElementById('sal-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Registros</div><div class="kpi-value">${invSalidas.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Total unidades</div><div class="kpi-value">${totalCant.toLocaleString('es-CL')}</div></div>
+    <div class="kpi"><div class="kpi-label">Proyectos</div><div class="kpi-value">${proyUnicos.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Solicitantes</div><div class="kpi-value">${[...new Set(invSalidas.map(s=>s.solicitado).filter(Boolean))].length}</div></div>
+  `;
+  const tbody=document.getElementById('sal-tbody');
+  if(!arr.length){tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:var(--sp8);color:var(--tx-m)">Sin registros</td></tr>`;return;}
+  tbody.innerHTML=arr.map(s=>`<tr>
+    <td class="seg-td-code">${s.codigo}</td>
+    <td style="font-size:var(--text-xs);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${s.desc}">${s.desc}</td>
+    <td class="td-num">${Number(s.cantidad).toLocaleString('es-CL')}</td>
+    <td class="td-num">${s.costo?'$'+Number(s.costo).toLocaleString('es-CL'):''}</td>
+    <td style="font-size:var(--text-xs);color:var(--tx-m)">${s.nguia||'—'}</td>
+    <td style="white-space:nowrap;font-size:var(--text-xs)">${s.fecha}</td>
+    <td style="font-size:var(--text-xs);color:var(--tx-m)">${s.lote||'—'}</td>
+    <td style="font-size:var(--text-xs)">${s.solicitado||'—'}</td>
+    <td style="font-size:var(--text-xs)">${s.status||'—'}</td>
+    <td><span class="tipo-chip" style="font-size:10px">${s.proyecto||'—'}</span></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="editarSalida(${invSalidas.indexOf(s)})">Editar</button></td>
+  </tr>`).join('');
+}
+
+// ===== RENDER INVENTARIO =====
+function renderInventario(){
+  const q=(document.getElementById('invent-search').value||'').toLowerCase();
+  const fe=document.getElementById('invent-f-exist').value;
+  let arr=calcInventario().filter(it=>{
+    const mq=!q||(it.codigo+it.desc).toLowerCase().includes(q);
+    const exist=it.entradas-it.salidas;
+    const me=!fe||(fe==='ok'&&exist>0)||(fe==='zero'&&exist<=0);
+    return mq&&me;
+  });
+  document.getElementById('invent-count').textContent=`${arr.length} materiales`;
+  const full=calcInventario();
+  const totalExist=full.reduce((a,it)=>a+(it.entradas-it.salidas),0);
+  const sinStock=full.filter(it=>it.entradas-it.salidas<=0).length;
+  document.getElementById('invent-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Materiales</div><div class="kpi-value">${full.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Total existencias</div><div class="kpi-value">${totalExist.toLocaleString('es-CL')}</div></div>
+    <div class="kpi"><div class="kpi-label">Sin stock</div><div class="kpi-value" style="color:var(--err)">${sinStock}</div></div>
+    <div class="kpi"><div class="kpi-label">Con stock</div><div class="kpi-value" style="color:var(--ok)">${full.length-sinStock}</div></div>
+  `;
+  const tbody=document.getElementById('invent-tbody');
+  if(!arr.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:var(--sp8);color:var(--tx-m)">Sin resultados</td></tr>`;return;}
+  tbody.innerHTML=arr.map(it=>{
+    const exist=it.entradas-it.salidas;
+    const cls=exist>20?'exist-ok':exist>0?'exist-warn':'exist-zero';
+    return`<tr>
+      <td class="seg-td-code">${it.codigo}</td>
+      <td>${it.desc}</td>
+      <td class="td-num">${it.entradas.toLocaleString('es-CL')}</td>
+      <td class="td-num">${it.salidas.toLocaleString('es-CL')}</td>
+      <td class="td-num ${cls}">${exist.toLocaleString('es-CL')}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== RENDER CONSOLIDADO =====
+function renderConsolidado(){
+  const q=(document.getElementById('cons-search').value||'').toLowerCase();
+  // Entradas agrupadas por codigo+proyecto
+  const entGrp={};
+  invEntradas.forEach(e=>{
+    if(q&&!(e.codigo+e.desc).toLowerCase().includes(q))return;
+    const k=e.codigo;
+    if(!entGrp[k]) entGrp[k]={codigo:e.codigo,desc:e.desc,rows:[]};
+    const found=entGrp[k].rows.find(r=>r.proyecto===e.proyecto);
+    if(found) found.cantidad+=Number(e.cantidad)||0;
+    else entGrp[k].rows.push({proyecto:e.proyecto,marca:e.marca,cantidad:Number(e.cantidad)||0});
+  });
+  // Salidas agrupadas por codigo+proyecto
+  const salGrp={};
+  invSalidas.forEach(s=>{
+    if(q&&!(s.codigo+s.desc).toLowerCase().includes(q))return;
+    const k=s.codigo;
+    if(!salGrp[k]) salGrp[k]={codigo:s.codigo,desc:s.desc,rows:[]};
+    const found=salGrp[k].rows.find(r=>r.proyecto===s.proyecto&&r.solicitado===s.solicitado);
+    if(found) found.cantidad+=Number(s.cantidad)||0;
+    else salGrp[k].rows.push({proyecto:s.proyecto,solicitado:s.solicitado,cantidad:Number(s.cantidad)||0});
+  });
+  // Stock agrupado
+  const invMap=calcInventario();
+  const stockGrp=invMap.filter(it=>!q||(it.codigo+it.desc).toLowerCase().includes(q));
+
+  const codigos=[...new Set([...Object.keys(entGrp),...Object.keys(salGrp),...stockGrp.map(s=>s.codigo)])].sort();
+  document.getElementById('cons-count').textContent=`${codigos.length} materiales`;
+
+  document.getElementById('cons-wrap').innerHTML=codigos.map(cod=>{
+    const en=entGrp[cod];
+    const sa=salGrp[cod];
+    const st=stockGrp.find(s=>s.codigo===cod);
+    const desc=(en||sa||st)?.desc||cod;
+    const exist=st?(st.entradas-st.salidas):0;
+    return`<div>
+      <div style="font-size:var(--text-xs);font-weight:800;color:var(--tx);padding:var(--sp2) 0;border-bottom:2px solid var(--pri);margin-bottom:var(--sp3)">${cod} <span style="font-weight:400;color:var(--tx-m)">${desc}</span></div>
+      <div class="cons-wrap" style="grid-template-columns:1fr 1fr 1fr;gap:var(--sp2)">
+        <div class="cons-card">
+          <div class="cons-card-hdr cons-hdr-ent">↓ Entradas</div>
+          <table class="cons-table"><thead><tr><th>Proyecto</th><th>Marca</th><th style="text-align:right">Cant.</th></tr></thead><tbody>
+          ${en?en.rows.map(r=>`<tr><td class="cons-proy">${r.proyecto||'—'}</td><td style="font-size:10px;color:var(--tx-m)">${r.marca||'—'}</td><td class="cons-qty">${r.cantidad}</td></tr>`).join(''):'<tr><td colspan="3" style="color:var(--tx-f);font-size:10px;padding:var(--sp2) var(--sp3)">Sin entradas</td></tr>'}
+          </tbody></table>
+        </div>
+        <div class="cons-card">
+          <div class="cons-card-hdr cons-hdr-sal">↑ Salidas</div>
+          <table class="cons-table"><thead><tr><th>Proyecto</th><th>Solicitado</th><th style="text-align:right">Cant.</th></tr></thead><tbody>
+          ${sa?sa.rows.map(r=>`<tr><td class="cons-proy">${r.proyecto||'—'}</td><td style="font-size:10px;color:var(--tx-m)">${r.solicitado||'—'}</td><td class="cons-qty">${r.cantidad}</td></tr>`).join(''):'<tr><td colspan="3" style="color:var(--tx-f);font-size:10px;padding:var(--sp2) var(--sp3)">Sin salidas</td></tr>'}
+          </tbody></table>
+        </div>
+        <div class="cons-card">
+          <div class="cons-card-hdr cons-hdr-stk">◼ Stock</div>
+          <table class="cons-table"><tbody>
+            <tr><td style="font-size:10px;color:var(--tx-m)">Entradas</td><td class="cons-qty">${st?st.entradas:0}</td></tr>
+            <tr><td style="font-size:10px;color:var(--tx-m)">Salidas</td><td class="cons-qty">${st?st.salidas:0}</td></tr>
+            <tr style="border-top:2px solid var(--div)"><td style="font-size:var(--text-xs);font-weight:800">Existencias</td><td class="cons-qty ${exist>0?'exist-ok':exist===0?'exist-zero':'exist-warn'}">${exist}</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== RENDER FACTURAS =====
+function renderFacturas(){
+  const q=(document.getElementById('fact-search').value||'').toLowerCase();
+  const fr=document.getElementById('fact-f-region').value;
+  let arr=invFacturas.filter(f=>{
+    const mq=!q||(f.proyecto+f.nfactura+f.nguia).toLowerCase().includes(q);
+    const mr=!fr||f.region===fr;
+    return mq&&mr;
+  });
+  document.getElementById('fact-count').textContent=`${arr.length} de ${invFacturas.length} facturas`;
+  const tbody=document.getElementById('fact-tbody');
+  if(!arr.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:var(--sp8);color:var(--tx-m)">Sin facturas</td></tr>`;return;}
+  // group by proyecto
+  const grupos={};
+  arr.forEach(f=>{if(!grupos[f.proyecto])grupos[f.proyecto]=[];grupos[f.proyecto].push(f);});
+  tbody.innerHTML=Object.entries(grupos).map(([proy,facs])=>
+    facs.map((f,i)=>`<tr>
+      ${i===0?`<td rowspan="${facs.length}" style="font-weight:700;vertical-align:top;padding-top:var(--sp3)">${proy}</td>`:''}
+      <td>${f.region?`<span class="fact-region">${f.region}</span>`:'—'}</td>
+      <td style="font-variant-numeric:tabular-nums;font-weight:600">${f.nfactura}</td>
+      <td style="white-space:nowrap;font-size:var(--text-xs)">${f.fecha}</td>
+      <td style="font-size:var(--text-xs);color:var(--tx-m)">${f.nguia||'—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="editarFactura(${invFacturas.indexOf(f)})">Editar</button></td>
+    </tr>`).join('')
+  ).join('');
+}
+
+// ===== MODALS ENTRADAS =====
+function abrirModalEntrada(){
+  document.getElementById('modal-ent-title').textContent='Nueva Entrada';
+  document.getElementById('ent-submit-btn').textContent='Guardar entrada';
+  document.getElementById('ent-delete-btn').style.display='none';
+  document.getElementById('ent-edit-idx').value='';
+  document.getElementById('form-entrada').reset();
+  openModal('modal-entrada');
+}
+function editarEntrada(idx){
+  const e=invEntradas[idx];if(!e)return;
+  document.getElementById('modal-ent-title').textContent='Editar Entrada';
+  document.getElementById('ent-submit-btn').textContent='Guardar cambios';
+  document.getElementById('ent-delete-btn').style.display='';
+  document.getElementById('ent-edit-idx').value=idx;
+  document.getElementById('ent-codigo').value=e.codigo;
+  document.getElementById('ent-desc').value=e.desc;
+  document.getElementById('ent-cantidad').value=e.cantidad;
+  document.getElementById('ent-costo').value=e.costo||'';
+  document.getElementById('ent-npedido').value=e.npedido||'';
+  document.getElementById('ent-nguia').value=e.nguia||'';
+  document.getElementById('ent-fecha').value=e.fecha;
+  document.getElementById('ent-tipo').value=e.tipo||'';
+  document.getElementById('ent-serie').value=e.serie||'';
+  document.getElementById('ent-lote').value=e.lote||'';
+  document.getElementById('ent-fecha-tub').value=e.fechaTub||'';
+  document.getElementById('ent-marca').value=e.marca||'';
+  document.getElementById('ent-status').value=e.status||'';
+  document.getElementById('ent-proyecto').value=e.proyecto||'';
+  document.getElementById('ent-region').value=e.region||'';
+  document.getElementById('ent-nfactura').value=e.nfactura||'';
+  openModal('modal-entrada');
+}
+function eliminarEntrada(){
+  const idx=parseInt(document.getElementById('ent-edit-idx').value);
+  invEntradas.splice(idx,1);closeModal('modal-entrada');toast('Entrada eliminada','warn');renderEntradas();renderInventario();
+}
+document.getElementById('form-entrada').addEventListener('submit',e=>{
+  e.preventDefault();
+  const codigo=document.getElementById('ent-codigo').value.trim();
+  const desc=document.getElementById('ent-desc').value.trim();
+  const cantidad=parseFloat(document.getElementById('ent-cantidad').value)||0;
+  const fecha=document.getElementById('ent-fecha').value;
+  if(!codigo||!desc||!cantidad||!fecha){toast('Complete los campos obligatorios','err');return;}
+  const obj={
+    codigo,desc,cantidad,
+    costo:parseFloat(document.getElementById('ent-costo').value)||0,
+    npedido:document.getElementById('ent-npedido').value.trim(),
+    nguia:document.getElementById('ent-nguia').value.trim(),
+    fecha,
+    tipo:document.getElementById('ent-tipo').value,
+    serie:document.getElementById('ent-serie').value.trim(),
+    lote:document.getElementById('ent-lote').value.trim(),
+    fechaTub:document.getElementById('ent-fecha-tub').value,
+    marca:document.getElementById('ent-marca').value.trim(),
+    status:document.getElementById('ent-status').value.trim(),
+    proyecto:document.getElementById('ent-proyecto').value.trim(),
+    region:document.getElementById('ent-region').value,
+    nfactura:document.getElementById('ent-nfactura').value.trim(),
+  };
+  const idx=document.getElementById('ent-edit-idx').value;
+  if(idx!=='') invEntradas[parseInt(idx)]=obj; else invEntradas.push(obj);
+  closeModal('modal-entrada');toast(idx!==''?'Entrada actualizada':'Entrada registrada','ok');
+  renderEntradas();renderInventario();renderConsolidado();
+});
+
+// ===== MODALS SALIDAS =====
+function abrirModalSalida(){
+  document.getElementById('modal-sal-title').textContent='Nueva Salida';
+  document.getElementById('sal-submit-btn').textContent='Guardar salida';
+  document.getElementById('sal-delete-btn').style.display='none';
+  document.getElementById('sal-edit-idx').value='';
+  document.getElementById('form-salida').reset();
+  openModal('modal-salida');
+}
+function editarSalida(idx){
+  const s=invSalidas[idx];if(!s)return;
+  document.getElementById('modal-sal-title').textContent='Editar Salida';
+  document.getElementById('sal-submit-btn').textContent='Guardar cambios';
+  document.getElementById('sal-delete-btn').style.display='';
+  document.getElementById('sal-edit-idx').value=idx;
+  document.getElementById('sal-codigo').value=s.codigo;
+  document.getElementById('sal-desc').value=s.desc;
+  document.getElementById('sal-cantidad').value=s.cantidad;
+  document.getElementById('sal-costo').value=s.costo||'';
+  document.getElementById('sal-nguia').value=s.nguia||'';
+  document.getElementById('sal-fecha').value=s.fecha;
+  document.getElementById('sal-lote').value=s.lote||'';
+  document.getElementById('sal-solicitado').value=s.solicitado||'';
+  document.getElementById('sal-status').value=s.status||'';
+  document.getElementById('sal-proyecto').value=s.proyecto||'';
+  openModal('modal-salida');
+}
+function eliminarSalida(){
+  const idx=parseInt(document.getElementById('sal-edit-idx').value);
+  invSalidas.splice(idx,1);closeModal('modal-salida');toast('Salida eliminada','warn');renderSalidas();renderInventario();
+}
+document.getElementById('form-salida').addEventListener('submit',e=>{
+  e.preventDefault();
+  const codigo=document.getElementById('sal-codigo').value.trim();
+  const desc=document.getElementById('sal-desc').value.trim();
+  const cantidad=parseFloat(document.getElementById('sal-cantidad').value)||0;
+  const fecha=document.getElementById('sal-fecha').value;
+  const proyecto=document.getElementById('sal-proyecto').value.trim();
+  if(!codigo||!desc||!cantidad||!fecha||!proyecto){toast('Complete los campos obligatorios','err');return;}
+  const obj={
+    codigo,desc,cantidad,
+    costo:parseFloat(document.getElementById('sal-costo').value)||0,
+    nguia:document.getElementById('sal-nguia').value.trim(),
+    fecha,
+    lote:document.getElementById('sal-lote').value.trim(),
+    solicitado:document.getElementById('sal-solicitado').value.trim(),
+    status:document.getElementById('sal-status').value.trim(),
+    proyecto,
+  };
+  const idx=document.getElementById('sal-edit-idx').value;
+  if(idx!=='') invSalidas[parseInt(idx)]=obj; else invSalidas.push(obj);
+  closeModal('modal-salida');toast(idx!==''?'Salida actualizada':'Salida registrada','ok');
+  renderSalidas();renderInventario();renderConsolidado();
+});
+
+// ===== MODALS FACTURAS =====
+function abrirModalFactura(){
+  document.getElementById('modal-fact-title').textContent='Nueva Factura';
+  document.getElementById('fact-submit-btn').textContent='Guardar factura';
+  document.getElementById('fact-delete-btn').style.display='none';
+  document.getElementById('fact-edit-idx').value='';
+  document.getElementById('form-factura').reset();
+  openModal('modal-factura');
+}
+function editarFactura(idx){
+  const f=invFacturas[idx];if(!f)return;
+  document.getElementById('modal-fact-title').textContent='Editar Factura';
+  document.getElementById('fact-submit-btn').textContent='Guardar cambios';
+  document.getElementById('fact-delete-btn').style.display='';
+  document.getElementById('fact-edit-idx').value=idx;
+  document.getElementById('fact-proyecto').value=f.proyecto;
+  document.getElementById('fact-region').value=f.region;
+  document.getElementById('fact-nfactura').value=f.nfactura;
+  document.getElementById('fact-fecha').value=f.fecha;
+  document.getElementById('fact-nguia').value=f.nguia||'';
+  openModal('modal-factura');
+}
+function eliminarFactura(){
+  const idx=parseInt(document.getElementById('fact-edit-idx').value);
+  invFacturas.splice(idx,1);closeModal('modal-factura');toast('Factura eliminada','warn');renderFacturas();
+}
+document.getElementById('form-factura').addEventListener('submit',e=>{
+  e.preventDefault();
+  const proyecto=document.getElementById('fact-proyecto').value.trim();
+  const region=document.getElementById('fact-region').value;
+  const nfactura=document.getElementById('fact-nfactura').value.trim();
+  const fecha=document.getElementById('fact-fecha').value;
+  if(!proyecto||!region||!nfactura||!fecha){toast('Complete los campos obligatorios','err');return;}
+  const obj={proyecto,region,nfactura,fecha,nguia:document.getElementById('fact-nguia').value.trim()};
+  const idx=document.getElementById('fact-edit-idx').value;
+  if(idx!=='') invFacturas[parseInt(idx)]=obj; else invFacturas.push(obj);
+  closeModal('modal-factura');toast(idx!==''?'Factura actualizada':'Factura registrada','ok');
+  renderFacturas();
+});
+
+// ===== NAVIGATE INVENTORY =====
+
+renderDashboard();
+</script>
+</body>
+</html>
