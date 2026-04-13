@@ -342,6 +342,141 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
   .mob-card-code{font-size:var(--text-xs);font-weight:700;color:var(--tx-m);letter-spacing:.04em}
   .mob-card-dir{font-size:var(--text-xs);color:var(--tx-m);margin-top:2px}
 }
+
+/* ===== ROLE SYSTEM ===== */
+.nav-item.role-admin-only,.nav-label.role-admin-only{display:none!important}
+body.role-admin .nav-item.role-admin-only{display:flex!important}
+body.role-admin .nav-label.role-admin-only{display:block!important}
+.nav-item.role-sol-hide{display:flex}
+body.role-solicitante .nav-item.role-sol-hide{display:none!important}
+.nav-label.role-sol-hide{display:block}
+body.role-solicitante .nav-label.role-sol-hide{display:none!important}
+
+/* ===== ROLE TOGGLE BUTTON ===== */
+.role-pill{display:inline-flex;align-items:center;gap:var(--sp2);padding:3px 10px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700;border:1.5px solid var(--bord);background:var(--surf2);color:var(--tx-m);cursor:pointer;transition:all var(--tr)}
+.role-pill:hover{border-color:var(--pri);color:var(--pri)}
+.role-pill.is-admin{border-color:var(--pri);background:var(--pri-hl);color:var(--pri)}
+.role-pill.is-sol{border-color:var(--ok);background:var(--ok-hl);color:var(--ok)}
+
+/* ===== APPROVAL BADGES ===== */
+.aprov-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
+.aprov-pendiente{background:var(--surf-off);color:var(--tx-m)}
+.aprov-revision{background:var(--warn-hl);color:var(--warn)}
+.aprov-aprobado{background:var(--ok-hl);color:var(--ok)}
+.aprov-despachado{background:var(--info-hl);color:var(--info)}
+
+/* ===== CONSUMO PAGE ===== */
+.consumo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:var(--sp4)}
+.consumo-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-xl);padding:var(--sp5);box-shadow:var(--sh-sm)}
+.consumo-card-title{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx-m);margin-bottom:var(--sp3)}
+.consumo-item{padding:var(--sp2) 0;border-bottom:1px solid var(--div)}
+.consumo-item:last-child{border-bottom:none}
+.consumo-item-name{font-size:var(--text-xs);color:var(--tx);font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.consumo-bar{height:6px;border-radius:var(--r-full);background:var(--surf-off);overflow:hidden;margin-top:4px}
+.consumo-bar-fill{height:100%;border-radius:var(--r-full);transition:width .6s ease}
+.fill-consumo-ok{background:var(--ok)}
+.fill-consumo-warn{background:var(--warn)}
+.fill-consumo-crit{background:var(--err)}
+.consumo-nums{display:flex;gap:var(--sp4);margin-top:4px;font-size:10px;color:var(--tx-m)}
+.consumo-num-item{display:flex;flex-direction:column;gap:1px}
+.consumo-num-label{color:var(--tx-f)}
+.consumo-num-val{font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.estado-stock-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:var(--r-full);font-size:10px;font-weight:700}
+.stock-disp{background:var(--ok-hl);color:var(--ok)}
+.stock-bajo{background:var(--warn-hl);color:var(--warn)}
+.stock-crit{background:var(--err-hl);color:var(--err)}
+
+/* ===== SOBRANTES PAGE ===== */
+.sobrante-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);padding:var(--sp4);display:flex;align-items:center;gap:var(--sp4);flex-wrap:wrap;box-shadow:var(--sh-sm)}
+.sobrante-info{flex:1;min-width:200px}
+.sobrante-code{font-size:var(--text-xs);font-weight:700;color:var(--tx-m)}
+.sobrante-nombre{font-size:var(--text-sm);font-weight:600;color:var(--tx);margin-top:2px}
+.sobrante-meta{font-size:var(--text-xs);color:var(--tx-m);margin-top:2px}
+.sobrante-actions{display:flex;gap:var(--sp2);flex-wrap:wrap}
+
+/* ===== ALERTAS PAGE ===== */
+.alerta-90{background:var(--err-hl);border:1px solid color-mix(in oklch,var(--err) 30%,transparent)}
+.alerta-60{background:var(--warn-hl);border:1px solid color-mix(in oklch,var(--warn) 30%,transparent)}
+.alerta-30{background:var(--info-hl);border:1px solid color-mix(in oklch,var(--info) 30%,transparent)}
+.alerta-card{border-radius:var(--r-lg);padding:var(--sp4) var(--sp5);display:flex;align-items:flex-start;gap:var(--sp4);margin-bottom:var(--sp3)}
+.alerta-icon{flex-shrink:0;width:36px;height:36px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center}
+.alerta-body-txt{flex:1}
+.alerta-title{font-size:var(--text-sm);font-weight:700;color:var(--tx);margin-bottom:2px}
+.alerta-desc{font-size:var(--text-xs);color:var(--tx-m)}
+.dias-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:800}
+
+/* ===== AUTOCOMPLETE ===== */
+.autocomplete-wrap{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--surf2);border:1px solid var(--pri);border-top:none;border-radius:0 0 var(--r-md) var(--r-md);box-shadow:var(--sh-md);max-height:200px;overflow-y:auto}
+.autocomplete-item{padding:var(--sp2) var(--sp3);font-size:var(--text-xs);cursor:pointer;border-bottom:1px solid var(--div)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:hover,.autocomplete-item.selected{background:var(--pri-hl);color:var(--pri)}
+.autocomplete-item strong{color:var(--tx)}
+.field-readonly{background:var(--surf-off)!important;color:var(--tx-m)!important;cursor:not-allowed}
+
+/* ===== PRINT ===== */
+@media print{
+  .sidebar,.topbar,.toast-area,.modal-overlay,.btn-no-print,.page-hdr .btn{display:none!important}
+  .app-shell{display:block!important}
+  .main{padding:var(--sp4)!important;overflow:visible!important}
+  .page{display:none!important}
+  .page.active{display:block!important}
+  body{background:#fff!important}
+}
+
+/* ===== NPS FORM (Solicitud estilo físico) ===== */
+.nps-form-wrap{max-width:900px;margin:0 auto;border:2px solid var(--bdr);border-radius:4px;overflow:hidden;background:var(--surf)}
+.nps-form-header{display:grid;grid-template-columns:160px 1fr 140px;border-bottom:2px solid var(--bdr)}
+.nps-logo-cell{padding:10px 14px;border-right:1px solid var(--bdr);display:flex;align-items:center;justify-content:center}
+.nps-logo{text-align:center;line-height:1.1}
+.nps-ic{font-size:9px;font-weight:700;color:var(--tx-m);letter-spacing:1px}
+.nps-brand{font-size:28px;font-weight:900;color:var(--pri);letter-spacing:-1px}
+.nps-sub{font-size:9px;color:var(--tx-m);white-space:nowrap}
+.nps-sap-cell{padding:8px 14px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:4px;justify-content:center}
+.nps-sap-label{font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--tx-m);text-transform:uppercase}
+.nps-sap-cell select{border:none;border-bottom:1.5px solid var(--bdr);border-radius:0;background:transparent;padding:2px 4px;font-size:13px;font-weight:600;outline:none;color:var(--tx)}
+.nps-sap-cell select:focus{border-bottom-color:var(--pri)}
+.nps-patente-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--tx-m);margin-top:4px}
+.nps-patente-row input{border:none;border-bottom:1px solid var(--bdr);outline:none;background:transparent;font-size:11px;padding:1px 4px;flex:1;color:var(--tx)}
+.nps-num-cell{padding:8px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.nps-num-label{font-size:10px;font-weight:700;color:var(--tx-m);text-transform:uppercase;letter-spacing:.5px}
+.nps-num-value{font-size:20px;font-weight:700;color:var(--tx);letter-spacing:1px}
+.nps-interno-label{font-size:9px;color:var(--tx-m);margin-top:4px}
+.nps-interno-input{border:none;border-bottom:1px solid var(--bdr);outline:none;background:transparent;font-size:11px;padding:1px 4px;width:100%;text-align:center;color:var(--tx)}
+.nps-form-title{text-align:center;font-weight:700;font-size:13px;letter-spacing:.5px;padding:8px;border-bottom:2px solid var(--bdr);background:var(--surf-off);text-transform:uppercase}
+/* Personnel tables */
+.nps-table-personnel{width:100%;border-collapse:collapse;font-size:12px}
+.nps-table-personnel th{background:var(--surf-off);font-weight:700;font-size:10px;letter-spacing:.3px;padding:5px 8px;border:1px solid var(--bdr);text-transform:uppercase;text-align:left}
+.nps-table-personnel td{border:1px solid var(--bdr);padding:3px 6px;vertical-align:middle}
+.nps-table-personnel td input[type=text],.nps-table-personnel td input[type=date]{border:none;background:transparent;outline:none;font-size:12px;width:100%;padding:2px 2px;color:var(--tx)}
+.nps-table-personnel td input[type=text]:focus,.nps-table-personnel td input[type=date]:focus{border-bottom:1.5px solid var(--pri)}
+.nps-label-cell{width:130px;font-weight:600;font-size:11px;color:var(--tx-m);white-space:nowrap}
+.nps-firma-cell{width:90px;min-height:36px;background:repeating-linear-gradient(transparent,transparent 17px,var(--bdr) 17px,var(--bdr) 18px);opacity:.5}
+/* Materials table */
+.nps-table-mat{width:100%;border-collapse:collapse;font-size:12px}
+.nps-table-mat th{background:var(--surf-off);font-weight:700;font-size:10px;letter-spacing:.3px;padding:5px 6px;border:1px solid var(--bdr);text-transform:uppercase;text-align:center;white-space:nowrap}
+.nps-table-mat td{border:1px solid var(--bdr);padding:3px 5px;vertical-align:middle;font-size:12px}
+.nps-table-mat td input{border:none;background:transparent;outline:none;font-size:12px;width:100%;padding:1px 2px;color:var(--tx)}
+.nps-table-mat td input:focus{border-bottom:1.5px solid var(--pri)}
+.nps-col-n{width:32px;text-align:center}
+.nps-col-cod{width:90px}
+.nps-col-desc{min-width:160px}
+.nps-col-um{width:70px;text-align:center}
+.nps-col-cant{width:65px;text-align:center}
+.nps-col-ticket{min-width:140px}
+.nps-col-act{width:36px}
+.nps-row-empty td{color:var(--tx-m);opacity:.35;font-size:11px}
+.nps-row-n{text-align:center;color:var(--tx-m);font-size:11px}
+/* Add material row */
+.nps-add-row{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--pri-hl);border-top:1px solid var(--bdr)}
+.nps-add-row input{border:1px solid var(--bdr);border-radius:4px;padding:5px 8px;font-size:12px;background:var(--surf);color:var(--tx);outline:none}
+.nps-add-row input:focus{border-color:var(--pri)}
+.nps-add-row .field-readonly{background:var(--surf-off)!important;color:var(--tx-m)!important}
+/* Tubería note */
+.nps-tuberia-note{font-size:10px;color:var(--tx-m);padding:5px 10px;border-top:1px solid var(--bdr);display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--surf)}
+.nps-tuberia-note input{border:none;border-bottom:1px solid var(--bdr);outline:none;padding:1px 4px;background:transparent;font-size:11px;width:180px;color:var(--tx)}
+/* Hint below SAP */
+#s-proyecto-hint{font-size:10px;color:var(--tx-m);padding:2px 0}
 </style>
 </head>
 <body>
@@ -358,6 +493,10 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
     <button class="icon-btn" data-theme-toggle aria-label="Cambiar tema">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
+    <button class="role-pill is-admin" id="role-toggle-btn" onclick="toggleRole()" title="Cambiar perfil de usuario">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="role-label">Administrador</span>
+    </button>
   </div>
 </header>
 
@@ -372,42 +511,59 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     Nueva Solicitud
   </button>
-  <button class="nav-item" data-nav="historial">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Historial
+  <button class="nav-item" data-nav="sol-adicional">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+    Solicitud Adicional
   </button>
   <button class="nav-item" data-nav="devolucion">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.75"/></svg>
     Devolución
   </button>
-  <div class="nav-label">Inventario</div>
-  <button class="nav-item" data-nav="inv-entradas">
+  <button class="nav-item role-sol-hide" data-nav="historial">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Historial
+  </button>
+  <div class="nav-label role-sol-hide">Inventario</div>
+  <button class="nav-item role-sol-hide" data-nav="inv-entradas">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
     Entradas
   </button>
-  <button class="nav-item" data-nav="inv-salidas">
+  <button class="nav-item role-sol-hide" data-nav="inv-salidas">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     Salidas
   </button>
-  <button class="nav-item" data-nav="inv-inventario">
+  <button class="nav-item role-sol-hide" data-nav="inv-inventario">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
     Inventario
   </button>
-  <button class="nav-item" data-nav="inv-consolidado">
+  <button class="nav-item role-sol-hide" data-nav="inv-consolidado">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     Consolidado
   </button>
-  <button class="nav-item" data-nav="inv-facturas">
+  <button class="nav-item role-sol-hide" data-nav="inv-facturas">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     Facturas x Región
   </button>
-  <div class="nav-label">Control</div>
-  <button class="nav-item" data-nav="proyectos">
+  <div class="nav-label role-sol-hide">Control</div>
+  <button class="nav-item role-sol-hide" data-nav="proyectos">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Proyectos
   </button>
-  <div class="nav-label">Referencia</div>
-  <button class="nav-item" data-nav="procedimiento">
+  <button class="nav-item" data-nav="consumo">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Consumo Proyecto
+  </button>
+  <button class="nav-item role-sol-hide" data-nav="sobrantes">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    Sobrantes
+  </button>
+  <button class="nav-item role-sol-hide" data-nav="alertas">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Alertas
+    <span id="alerta-count-badge" style="margin-left:auto;background:var(--err);color:#fff;border-radius:var(--r-full);padding:1px 6px;font-size:10px;font-weight:700;display:none"></span>
+  </button>
+  <div class="nav-label role-sol-hide">Referencia</div>
+  <button class="nav-item role-sol-hide" data-nav="procedimiento">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Procedimiento
   </button>
@@ -450,79 +606,161 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
 
 <!-- ========== NUEVA SOLICITUD ========== -->
 <div class="page" id="page-solicitudes">
-  <div class="page-hdr">
-    <div class="page-hdr-text">
-      <h1>Nueva Solicitud</h1>
-      <p>Complete todos los campos obligatorios — Art. 4.2</p>
-    </div>
-  </div>
 
-  <div class="alert alert-info">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div class="alert-body">
-      <div class="alert-title">Art. 4.1 — Toda solicitud debe quedar registrada</div>
-      <div class="alert-text">No se entregará material sin una solicitud previamente registrada en el sistema (Art. 4.3).</div>
-    </div>
-  </div>
-
-  <div class="card">
+  <div class="nps-form-wrap">
     <form id="form-solicitud" novalidate>
-      <div class="form-grid">
-        <div class="field">
-          <label class="field-req" for="s-proyecto">Nombre de proyecto</label>
-          <input type="text" id="s-proyecto" placeholder="Ej: Proyecto Norte — Sector 3" required>
+
+      <!-- ── Encabezado ── -->
+      <div class="nps-form-header">
+        <div class="nps-logo-cell">
+          <div class="nps-logo">
+            <div class="nps-ic">IC</div>
+            <div class="nps-brand">NPS</div>
+            <div class="nps-sub">Nueva Pacífico Sur S.A.</div>
+          </div>
         </div>
-        <div class="field">
-          <label class="field-req" for="s-codigo">Código de material</label>
-          <input type="text" id="s-codigo" placeholder="Ej: TUB-PE-053" required>
-        </div>
-        <div class="field">
-          <label class="field-req" for="s-tipo">Tipo de material</label>
-          <select id="s-tipo" required>
-            <option value="">Seleccionar...</option>
-            <option>Tubería PE rollo</option>
-            <option>Fitting / accesorios</option>
-            <option>Válvula</option>
-            <option>Herramienta</option>
-            <option>Otro</option>
+        <div class="nps-sap-cell">
+          <div class="nps-sap-label">Código Proyecto SAP</div>
+          <select id="s-proyecto-sel" required onchange="onProyectoChange()">
+            <option value="">Seleccionar proyecto...</option>
           </select>
+          <span id="s-proyecto-hint" style="display:none"></span>
+          <div class="nps-patente-row">
+            <span>N° Patente:</span>
+            <input type="text" id="s-patente" placeholder="______________">
+          </div>
         </div>
-        <div class="field">
-          <label class="field-req" for="s-diametro">Diámetro / especificación técnica</label>
-          <input type="text" id="s-diametro" placeholder="Ej: 53 mm SDR 11" required>
+        <div class="nps-num-cell">
+          <div class="nps-num-label">N°</div>
+          <div class="nps-num-value" id="s-form-num">000001</div>
+          <div class="nps-interno-label">N° Interno</div>
+          <input type="text" id="s-interno" class="nps-interno-input" placeholder="">
         </div>
-        <div class="field">
-          <label class="field-req" for="s-cantidad">Cantidad exacta requerida</label>
-          <input type="number" id="s-cantidad" placeholder="Ej: 39" min="0.1" step="0.1" required>
-          <span class="field-hint">En metros para tuberías en rollo, unidades para el resto</span>
-        </div>
-        <div class="field">
-          <label class="field-req" for="s-solicitante">Nombre del solicitante</label>
-          <input type="text" id="s-solicitante" placeholder="Nombre completo" required>
-        </div>
-      </div>
-      <div class="field" style="margin-top:var(--sp4)">
-        <label for="s-obs">Observaciones (opcional)</label>
-        <textarea id="s-obs" rows="2" placeholder="Comentarios adicionales..."></textarea>
       </div>
 
-      <div id="solicitud-tuberia-notice" style="display:none;margin-top:var(--sp4)">
-        <div class="alert alert-warn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <!-- ── Título ── -->
+      <div class="nps-form-title">Solicitud y/o Devoluciones de Materiales</div>
+
+      <!-- ── Datos de entrega (solicitud) ── -->
+      <table class="nps-table-personnel">
+        <thead>
+          <tr>
+            <th>Datos de Entrega</th>
+            <th>Usuario Empresa</th>
+            <th>Firma</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="nps-label-cell">Solicitado por:</td>
+            <td><input type="text" id="s-solicitante" placeholder="Nombre completo" required></td>
+            <td class="nps-firma-cell"></td>
+            <td><input type="date" id="s-fecha-sol"></td>
+          </tr>
+          <tr>
+            <td class="nps-label-cell">Autorizado por:</td>
+            <td><input type="text" id="s-autorizador" placeholder="Ej: Erick Hormatabal" value="Erick Hormatabal"></td>
+            <td class="nps-firma-cell"></td>
+            <td><input type="date" id="s-fecha-aut"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ── Tabla de materiales ── -->
+      <table class="nps-table-mat">
+        <thead>
+          <tr>
+            <th class="nps-col-n">N°</th>
+            <th class="nps-col-cod">Código</th>
+            <th class="nps-col-desc">Descripción Breve</th>
+            <th class="nps-col-um">U.Medida</th>
+            <th class="nps-col-cant">Cant.</th>
+            <th class="nps-col-ticket">Ticket de Entrega y Obs.</th>
+            <th class="nps-col-act btn-no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="nps-mat-rows"></tbody>
+      </table>
+
+      <!-- ── Fila para agregar material ── -->
+      <div class="nps-add-row btn-no-print">
+        <div class="autocomplete-wrap" style="flex:0 0 110px">
+          <input type="text" id="s-codigo" placeholder="Código" autocomplete="off"
+            oninput="onCodigoSolInput(this.value)"
+            onblur="setTimeout(()=>cerrarAutocompleteSol(),200)">
+          <div class="autocomplete-list" id="sol-autocomplete" style="display:none"></div>
+        </div>
+        <input type="text" id="s-nombre-mat" class="field-readonly" readonly placeholder="Descripción automática" style="flex:1;min-width:120px">
+        <input type="text" id="s-unidad" class="field-readonly" readonly placeholder="UM" style="flex:0 0 56px">
+        <input type="number" id="s-cantidad" placeholder="Cant." min="0.1" step="0.1" style="flex:0 0 72px">
+        <input type="text" id="s-obs-row" placeholder="Ticket / observación" style="flex:1;min-width:100px">
+        <button type="button" class="btn btn-primary btn-sm" onclick="agregarMaterialSolicitud()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar
+        </button>
+      </div>
+      <!-- hidden: unit hint for tubería detection -->
+      <span id="s-unidad-hint" style="display:none"></span>
+
+      <!-- ── Nota tubería ── -->
+      <div class="nps-tuberia-note">
+        <span>+ (Sólo en caso de Tubería)</span>
+        <span>Nomenclatura de Tubería:
+          <input type="text" id="s-nomenclatura" placeholder="________________________">
+        </span>
+      </div>
+
+      <!-- ── Datos entrega (despacho) ── -->
+      <table class="nps-table-personnel" style="margin-top:0;border-top:2px solid var(--bdr)">
+        <thead>
+          <tr>
+            <th>Datos de Entrega</th>
+            <th>Usuario Empresa</th>
+            <th>Firma</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="nps-label-cell">Entregado por</td>
+            <td><input type="text" id="s-entregado" placeholder="Nombre bodeguero"></td>
+            <td class="nps-firma-cell"></td>
+            <td><input type="date" id="s-fecha-entrega"></td>
+          </tr>
+          <tr>
+            <td class="nps-label-cell">Recibido Conforme</td>
+            <td><input type="text" id="s-recibido" placeholder="Nombre receptor"></td>
+            <td class="nps-firma-cell"></td>
+            <td><input type="date" id="s-fecha-recepcion"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ── Aviso tubería (oculto) ── -->
+      <div id="solicitud-tuberia-notice" style="display:none;margin:8px 0 0">
+        <div class="alert alert-warn" style="margin:0;border-radius:0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <div class="alert-body">
             <div class="alert-title">Art. 5 — Entrega de tubería en rollo</div>
-            <div class="alert-text" id="tuberia-notice-text">Bodega puede entregar el rollo completo. Deberá devolver el excedente no utilizado. La no devolución se imputa como consumo total del proyecto.</div>
+            <div class="alert-text" id="tuberia-notice-text">Bodega puede entregar el rollo completo. Deberá devolver el excedente no utilizado.</div>
           </div>
         </div>
       </div>
 
-      <div class="form-actions">
+      <!-- ── Acciones ── -->
+      <div class="form-actions btn-no-print" style="padding:12px 16px;border-top:1px solid var(--bdr)">
         <button type="submit" class="btn btn-primary">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           Registrar solicitud
         </button>
-        <button type="reset" class="btn btn-secondary">Limpiar</button>
+        <button type="button" class="btn btn-secondary" onclick="imprimirFormSolicitud()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="limpiarFormSolicitud()">Limpiar</button>
       </div>
+
     </form>
   </div>
 </div>
@@ -534,6 +772,30 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
       <h1>Historial de Solicitudes</h1>
       <p>Registro completo de solicitudes y entregas</p>
     </div>
+    <div style="display:flex;gap:var(--sp2)">
+      <button class="btn btn-secondary btn-no-print" onclick="descargarHistorialCSV()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar CSV
+      </button>
+    </div>
+  </div>
+  <div class="card card-sm btn-no-print">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="hist-search" type="search" placeholder="Buscar por proyecto, material, solicitante…" oninput="renderHistorial()">
+      <select class="inv-filter" id="hist-f-estado" onchange="renderHistorial()">
+        <option value="">Todos los estados devolución</option>
+        <option value="pendiente-dev">Dev. pendiente</option>
+        <option value="cerrado">Cerrado</option>
+      </select>
+      <select class="inv-filter" id="hist-f-aprov" onchange="renderHistorial()">
+        <option value="">Todos los estados aprobación</option>
+        <option value="pendiente">Pendiente revisión</option>
+        <option value="revision">En revisión (Erick)</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="despachado">Despachado</option>
+      </select>
+      <span class="inv-count" id="hist-count"></span>
+    </div>
   </div>
   <div class="table-wrap">
     <table>
@@ -542,12 +804,13 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
           <th>Fecha</th>
           <th>Proyecto</th>
           <th>Material</th>
-          <th>Código</th>
+          <th>Unidad</th>
           <th class="td-num">Solicitado</th>
           <th class="td-num">Entregado</th>
-          <th>Estado</th>
+          <th>Dev.</th>
+          <th>Aprobación</th>
           <th>Solicitante</th>
-          <th></th>
+          <th class="btn-no-print"></th>
         </tr>
       </thead>
       <tbody id="historial-tbody"></tbody>
@@ -573,19 +836,44 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
     <div class="card">
       <div class="card-title">Registrar devolución</div>
       <form id="form-devolucion" novalidate>
-        <div class="field">
-          <label class="field-req" for="d-solicitud">Solicitud de origen</label>
-          <select id="d-solicitud" required>
-            <option value="">Seleccionar solicitud...</option>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-req" for="d-usuario">Usuario que devuelve</label>
+            <input type="text" id="d-usuario" placeholder="Nombre completo" required>
+          </div>
+          <div class="field">
+            <label class="field-req" for="d-cod-proyecto">Código de proyecto</label>
+            <select id="d-cod-proyecto" required onchange="onDevProyChange()">
+              <option value="">Seleccionar proyecto...</option>
+            </select>
+          </div>
+          <div class="field autocomplete-wrap">
+            <label class="field-req" for="d-cod-material">Código de material</label>
+            <input type="text" id="d-cod-material" placeholder="Ej: 301749" required autocomplete="off" oninput="onCodigoDevInput(this.value)" onblur="setTimeout(()=>cerrarAutocompleteDev(),200)">
+            <div class="autocomplete-list" id="dev-autocomplete" style="display:none"></div>
+          </div>
+          <div class="field">
+            <label for="d-nombre-mat">Nombre del material</label>
+            <input type="text" id="d-nombre-mat" class="field-readonly" readonly placeholder="Auto">
+          </div>
+          <div class="field">
+            <label for="d-unidad">Unidad de medida</label>
+            <input type="text" id="d-unidad" class="field-readonly" readonly placeholder="Auto">
+          </div>
+          <div class="field">
+            <label class="field-req" for="d-cantidad">Cantidad devuelta</label>
+            <input type="number" id="d-cantidad" placeholder="0" min="0.1" step="0.1" required>
+          </div>
+        </div>
+        <div class="field" style="margin-top:var(--sp3)">
+          <label for="d-solicitud">Vincular a solicitud de origen (opcional)</label>
+          <select id="d-solicitud">
+            <option value="">Sin vincular...</option>
           </select>
-          <span class="field-hint">Solo solicitudes con devolución pendiente</span>
+          <span class="field-hint">Solicitudes con devolución pendiente</span>
         </div>
         <div id="d-detalle" style="display:none;margin-top:var(--sp4)"></div>
-        <div class="field" style="margin-top:var(--sp4)">
-          <label class="field-req" for="d-cantidad">Cantidad a devolver</label>
-          <input type="number" id="d-cantidad" placeholder="0" min="0.1" step="0.1" required>
-        </div>
-        <div class="field" style="margin-top:var(--sp4)">
+        <div class="field" style="margin-top:var(--sp3)">
           <label for="d-estado">Estado del material</label>
           <select id="d-estado">
             <option value="bueno">Buen estado</option>
@@ -593,7 +881,7 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
             <option value="parcial">Uso parcial visible</option>
           </select>
         </div>
-        <div class="field" style="margin-top:var(--sp4)">
+        <div class="field" style="margin-top:var(--sp3)">
           <label for="d-obs">Observaciones</label>
           <textarea id="d-obs" rows="2" placeholder="Detalle condiciones del material..."></textarea>
         </div>
@@ -1039,7 +1327,231 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
   </div>
 </div>
 
+
+<!-- ========== SOLICITUD ADICIONAL ========== -->
+<div class="page" id="page-sol-adicional">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Solicitud Adicional</h1>
+      <p>Materiales adicionales no contemplados en el memo original — Art. 7</p>
+    </div>
+  </div>
+  <div class="alert alert-info">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="alert-body">
+      <div class="alert-title">Art. 7 — Materiales adicionales</div>
+      <div class="alert-text">Adjunta el respaldo del correo enviado al gestor solicitando la autorización. La solicitud será revisada antes de ser procesada.</div>
+    </div>
+  </div>
+  <div class="card">
+    <form id="form-sol-adicional" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-req" for="sa-solicitante">Usuario solicitante</label>
+          <input type="text" id="sa-solicitante" placeholder="Nombre completo" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="sa-proyecto">Código de proyecto</label>
+          <select id="sa-proyecto" required onchange="onSaProyChange()">
+            <option value="">Seleccionar proyecto...</option>
+          </select>
+        </div>
+        <div class="field autocomplete-wrap">
+          <label class="field-req" for="sa-codigo">Código del material</label>
+          <input type="text" id="sa-codigo" placeholder="Ej: 301749" required autocomplete="off" oninput="onCodigoSaInput(this.value)" onblur="setTimeout(()=>cerrarAutocompleteSa(),200)">
+          <div class="autocomplete-list" id="sa-autocomplete" style="display:none"></div>
+        </div>
+        <div class="field">
+          <label for="sa-nombre">Nombre del material</label>
+          <input type="text" id="sa-nombre" class="field-readonly" readonly placeholder="Se completa automáticamente">
+        </div>
+        <div class="field">
+          <label for="sa-unidad">Unidad de medida</label>
+          <input type="text" id="sa-unidad" class="field-readonly" readonly placeholder="Automático">
+        </div>
+        <div class="field">
+          <label class="field-req" for="sa-cantidad">Cantidad solicitada</label>
+          <input type="number" id="sa-cantidad" placeholder="0" min="0.1" step="0.1" required>
+        </div>
+      </div>
+      <div class="field" style="margin-top:var(--sp4)">
+        <label class="field-req" for="sa-respaldo">Adjuntar respaldo <span style="font-weight:400;color:var(--tx-m)">(captura de correo enviado al gestor)</span></label>
+        <input type="file" id="sa-respaldo" accept="image/*,.pdf" style="background:var(--surf2);border:1px solid var(--bord);border-radius:var(--r-md);padding:var(--sp2) var(--sp3);font-size:var(--text-sm);color:var(--tx);width:100%">
+        <span class="field-hint">Formatos aceptados: imagen o PDF</span>
+      </div>
+      <div class="field" style="margin-top:var(--sp3)">
+        <label for="sa-obs">Observaciones</label>
+        <textarea id="sa-obs" rows="2" placeholder="Detalle adicional..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Enviar solicitud adicional
+        </button>
+        <button type="reset" class="btn btn-secondary">Limpiar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="margin-top:var(--sp4)">
+    <div class="card-title">Historial de solicitudes adicionales</div>
+    <div id="sa-historial-wrap">
+      <div class="empty" style="padding:var(--sp8)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>Sin solicitudes adicionales registradas</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CONSUMO POR PROYECTO ========== -->
+<div class="page" id="page-consumo">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Consumo por Proyecto</h1>
+      <p>Visualización de asignación, retiro y saldo disponible por proyecto</p>
+    </div>
+  </div>
+  <div class="card card-sm" style="margin-bottom:0">
+    <div class="inv-toolbar">
+      <select class="inv-filter" id="consumo-f-proyecto" onchange="renderConsumo()" style="flex:1;min-width:200px">
+        <option value="">Todos los proyectos</option>
+      </select>
+      <select class="inv-filter" id="consumo-f-estado" onchange="renderConsumo()">
+        <option value="">Todos los estados</option>
+        <option value="ok">Disponible</option>
+        <option value="bajo">Bajo stock</option>
+        <option value="agotado">Sin stock</option>
+      </select>
+      <span class="inv-count" id="consumo-count"></span>
+    </div>
+  </div>
+  <div id="consumo-kpi-area" class="kpi-grid"></div>
+  <div id="consumo-grid-area" class="consumo-grid"></div>
+  <div id="consumo-empty" class="empty" style="display:none">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <h3>Sin datos de consumo</h3>
+    <p>Agrega materiales en el seguimiento de proyectos para ver el consumo</p>
+  </div>
+</div>
+
+<!-- ========== SOBRANTES ========== -->
+<div class="page" id="page-sobrantes">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Control de Materiales Sobrantes</h1>
+      <p>Registro de materiales sobrantes por proyecto — devolución o reasignación</p>
+    </div>
+    <button class="btn btn-primary" onclick="abrirModalSobrante()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Registrar sobrante
+    </button>
+  </div>
+  <div id="sobrantes-kpi" class="kpi-grid"></div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <input class="inv-search" id="sob-search" type="search" placeholder="Buscar código, proyecto, material…" oninput="renderSobrantes()">
+      <select class="inv-filter" id="sob-f-estado" onchange="renderSobrantes()">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente decisión</option>
+        <option value="devolver">A devolver a Metrogas</option>
+        <option value="reasignado">Reasignado</option>
+        <option value="devuelto">Devuelto a Metrogas</option>
+      </select>
+      <span class="inv-count" id="sob-count"></span>
+    </div>
+  </div>
+  <div id="sobrantes-list"></div>
+</div>
+
+<!-- ========== ALERTAS DE MATERIALES ========== -->
+<div class="page" id="page-alertas">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Alertas de Materiales</h1>
+      <p>Materiales próximos a 90 días — gestión de devolución a Metrogas</p>
+    </div>
+  </div>
+  <div id="alertas-kpi" class="kpi-grid"></div>
+  <div class="card card-sm">
+    <div class="inv-toolbar">
+      <select class="inv-filter" id="alert-f-tipo" onchange="renderAlertas()">
+        <option value="">Todas las alertas</option>
+        <option value="vencido">Vencido (+90 días)</option>
+        <option value="critico">Crítico (60–90 días)</option>
+        <option value="proximo">Próximo (30–60 días)</option>
+      </select>
+      <span class="inv-count" id="alert-count"></span>
+    </div>
+  </div>
+  <div id="alertas-list"></div>
+  <div id="alertas-empty" class="empty" style="display:none">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--ok)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <h3 style="color:var(--ok)">Sin alertas activas</h3>
+    <p>Todos los materiales están dentro del rango de tiempo permitido</p>
+  </div>
+</div>
+
 </main>
+</div>
+
+<!-- MODAL SOBRANTE -->
+<div class="modal-overlay" id="modal-sobrante">
+  <div class="modal modal-lg" role="dialog" aria-modal="true">
+    <div class="modal-hdr">
+      <h2>Registrar Material Sobrante</h2>
+      <button class="icon-btn" onclick="closeModal('modal-sobrante')" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-sobrante" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-req" for="sob-proyecto">Proyecto de origen</label>
+          <select id="sob-proyecto" required>
+            <option value="">Seleccionar...</option>
+          </select>
+        </div>
+        <div class="field autocomplete-wrap">
+          <label class="field-req" for="sob-codigo">Código de material</label>
+          <input type="text" id="sob-codigo" placeholder="Ej: 301749" required autocomplete="off" oninput="onCodigoSobInput(this.value)" onblur="setTimeout(()=>cerrarAutocompleteSob(),200)">
+          <div class="autocomplete-list" id="sob-autocomplete" style="display:none"></div>
+        </div>
+        <div class="field">
+          <label for="sob-nombre">Nombre del material</label>
+          <input type="text" id="sob-nombre" class="field-readonly" readonly placeholder="Auto">
+        </div>
+        <div class="field">
+          <label for="sob-unidad">Unidad</label>
+          <input type="text" id="sob-unidad" class="field-readonly" readonly placeholder="Auto">
+        </div>
+        <div class="field">
+          <label class="field-req" for="sob-cantidad">Cantidad sobrante</label>
+          <input type="number" id="sob-cantidad" placeholder="0" min="0.1" step="0.1" required>
+        </div>
+        <div class="field">
+          <label class="field-req" for="sob-decision">Decisión</label>
+          <select id="sob-decision" required>
+            <option value="pendiente">Pendiente decisión</option>
+            <option value="devolver">Devolver a Metrogas</option>
+            <option value="reasignado">Reasignar a otro proyecto</option>
+          </select>
+        </div>
+        <div class="field" id="sob-proy-destino-wrap" style="display:none">
+          <label for="sob-proy-destino">Proyecto destino (reasignación)</label>
+          <select id="sob-proy-destino">
+            <option value="">Seleccionar...</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:var(--sp3)">
+        <label for="sob-obs">Observaciones</label>
+        <textarea id="sob-obs" rows="2" placeholder="Detalle adicional..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Registrar sobrante</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-sobrante')">Cancelar</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- MODAL DETALLE PROYECTO (simple, desde lista) -->
@@ -1392,9 +1904,16 @@ function navigate(page) {
   const navEl=document.querySelector('[data-nav="'+page+'"]');
   if(navEl) navEl.classList.add('active');
   else { const pEl=document.querySelector('[data-nav="proyectos"]'); if(pEl) pEl.classList.add('active'); }
-  const titles={dashboard:'Dashboard',solicitudes:'Nueva Solicitud',historial:'Historial',devolucion:'Devolución',stock:'Stock Bodega',procedimiento:'Procedimiento',proyectos:'Control de Proyectos',seguimiento:'Seguimiento de Materiales','inv-entradas':'Entradas','inv-salidas':'Salidas','inv-inventario':'Inventario','inv-consolidado':'Consolidado','inv-facturas':'Facturas x Región'};
+  const titles={dashboard:'Dashboard',solicitudes:'Nueva Solicitud',historial:'Historial',devolucion:'Devolución',stock:'Stock Bodega',procedimiento:'Procedimiento',proyectos:'Control de Proyectos',seguimiento:'Seguimiento de Materiales','inv-entradas':'Entradas','inv-salidas':'Salidas','inv-inventario':'Inventario','inv-consolidado':'Consolidado','inv-facturas':'Facturas x Región','sol-adicional':'Solicitud Adicional',consumo:'Consumo por Proyecto',sobrantes:'Sobrantes',alertas:'Alertas de Materiales'};
   document.getElementById('page-title').textContent=titles[page]||'';
   if(page==='dashboard')renderDashboard();
+  if(page==='solicitudes'){
+    renderFilasMateriales();
+    const fSol=document.getElementById('s-fecha-sol');
+    if(fSol&&!fSol.value) fSol.value=new Date().toISOString().slice(0,10);
+    document.getElementById('s-form-num').textContent=String(nextId).padStart(6,'0');
+    poblarSelectProyectos('s-proyecto-sel','Seleccionar proyecto...');
+  }
   if(page==='historial')renderHistorial();
   if(page==='devolucion')renderDevolucion();
   if(page==='stock')renderStock();
@@ -1404,6 +1923,10 @@ function navigate(page) {
   if(page==='inv-inventario'){renderInventario();}
   if(page==='inv-consolidado'){renderConsolidado();}
   if(page==='inv-facturas'){renderFacturas();}
+  if(page==='sol-adicional'){renderSolAdicional();}
+  if(page==='consumo'){renderConsumo();}
+  if(page==='sobrantes'){renderSobrantes();}
+  if(page==='alertas'){renderAlertas();}
 }
 document.querySelectorAll('[data-nav]').forEach(btn=>{
   btn.addEventListener('click',()=>navigate(btn.dataset.nav));
@@ -1444,11 +1967,14 @@ function renderDashboard(){
   const pending=solicitudes.filter(s=>s.estado==='pendiente-dev');
   const closed=solicitudes.filter(s=>s.estado==='cerrado');
   const lowStock=stock.filter(s=>(s.disponible/s.total)<0.3);
+  const porRevisar=solicitudes.filter(s=>(s.aprobacion||'pendiente')==='pendiente');
+  const porDespachar=solicitudes.filter(s=>s.aprobacion==='aprobado');
   // KPIs
   document.getElementById('kpi-area').innerHTML=`
     <div class="kpi"><div class="kpi-label">Total solicitudes</div><div class="kpi-value">${solicitudes.length}</div><div class="kpi-sub">Registradas en el sistema</div></div>
-    <div class="kpi"><div class="kpi-label">Devoluciones pendientes</div><div class="kpi-value">${pending.length}</div><div class="kpi-sub"><span class="kpi-badge badge-warn">${pending.length>0?'Requiere acción':'Al día'}</span></div></div>
-    <div class="kpi"><div class="kpi-label">Solicitudes cerradas</div><div class="kpi-value">${closed.length}</div><div class="kpi-sub">Sin excedentes pendientes</div></div>
+    <div class="kpi"><div class="kpi-label">Por revisar (Erick)</div><div class="kpi-value" style="color:${porRevisar.length>0?'var(--warn)':'var(--ok)'}">${porRevisar.length}</div><div class="kpi-sub"><span class="kpi-badge ${porRevisar.length>0?'badge-warn':'badge-ok'}">${porRevisar.length>0?'Pendiente revisión':'Al día'}</span></div></div>
+    <div class="kpi"><div class="kpi-label">Por despachar (Ronny)</div><div class="kpi-value" style="color:${porDespachar.length>0?'var(--info)':'var(--ok)'}">${porDespachar.length}</div><div class="kpi-sub"><span class="kpi-badge ${porDespachar.length>0?'badge-info':'badge-ok'}">${porDespachar.length>0?'Listo para despacho':'Sin pendientes'}</span></div></div>
+    <div class="kpi"><div class="kpi-label">Dev. pendientes</div><div class="kpi-value">${pending.length}</div><div class="kpi-sub"><span class="kpi-badge ${pending.length>0?'badge-warn':'badge-ok'}">${pending.length>0?'Requiere acción':'Al día'}</span></div></div>
     <div class="kpi"><div class="kpi-label">Materiales stock bajo</div><div class="kpi-value">${lowStock.length}</div><div class="kpi-sub"><span class="kpi-badge ${lowStock.length>0?'badge-err':'badge-ok'}">${lowStock.length>0?'Revisar':'OK'}</span></div></div>
   `;
   // Solicitudes recientes
@@ -1499,22 +2025,44 @@ function estadoBadge(s){
   if(s.estado==='pendiente-dev')return'<span class="tag badge-warn">Dev. pendiente</span>';
   return'<span class="tag badge-neu">'+s.estado+'</span>';
 }
+function aprobBadge(a){
+  const map={pendiente:['aprov-pendiente','Pendiente revisión'],revision:['aprov-revision','En revisión (Erick)'],aprobado:['aprov-aprobado','Aprobado'],despachado:['aprov-despachado','Despachado (Ronny)']};
+  const [cls,txt]=map[a]||map['pendiente'];
+  return`<span class="aprov-badge ${cls}">${txt}</span>`;
+}
 function renderHistorial(){
+  const q=(document.getElementById('hist-search')||{value:''}).value.toLowerCase();
+  const fe=(document.getElementById('hist-f-estado')||{value:''}).value;
+  const fa=(document.getElementById('hist-f-aprov')||{value:''}).value;
+  let arr=[...solicitudes].reverse().filter(s=>{
+    const mq=!q||(s.proyecto+s.tipo+(s.codigo||'')+(s.solicitante||'')).toLowerCase().includes(q);
+    const me=!fe||s.estado===fe;
+    const ma=!fa||(s.aprobacion||'pendiente')===fa;
+    return mq&&me&&ma;
+  });
+  const countEl=document.getElementById('hist-count');
+  if(countEl)countEl.textContent=arr.length+' registros';
   const tbody=document.getElementById('historial-tbody');
   const empty=document.getElementById('historial-empty');
-  if(!solicitudes.length){tbody.innerHTML='';empty.style.display='flex';return;}
+  if(!arr.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
-  tbody.innerHTML=[...solicitudes].reverse().map(s=>`
+  tbody.innerHTML=arr.map(s=>`
     <tr>
-      <td>${s.fecha}</td>
+      <td style="white-space:nowrap">${s.fecha}</td>
       <td style="font-weight:600">${s.proyecto}</td>
-      <td>${s.tipo}</td>
-      <td style="color:var(--tx-m);font-size:var(--text-xs)">${s.codigo}</td>
+      <td style="font-size:var(--text-xs)">${s.tipo}${s.codigo?'<br><span style="color:var(--tx-m)">'+s.codigo+'</span>':''}</td>
+      <td style="color:var(--tx-m);font-size:var(--text-xs)">${s.unidad||'—'}</td>
       <td class="td-num">${s.solicitado}</td>
       <td class="td-num">${s.entregado}</td>
       <td>${estadoBadge(s)}</td>
-      <td style="color:var(--tx-m)">${s.solicitante}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="verDetalle('${s.id}')">Ver</button></td>
+      <td>${aprobBadge(s.aprobacion||'pendiente')}</td>
+      <td style="color:var(--tx-m);font-size:var(--text-xs)">${s.solicitante}</td>
+      <td class="btn-no-print" style="white-space:nowrap">
+        ${(s.aprobacion||'pendiente')==='pendiente'?`<button class="btn btn-sm btn-secondary" onclick="avanzarAprobacion('${s.id}')">Revisar</button> `:''}
+        ${(s.aprobacion||'pendiente')==='revision'?`<button class="btn btn-sm btn-primary" onclick="avanzarAprobacion('${s.id}')">Aprobar</button> `:''}
+        ${(s.aprobacion||'pendiente')==='aprobado'?`<button class="btn btn-sm btn-primary" onclick="avanzarAprobacion('${s.id}')">Despachar</button> `:''}
+        <button class="btn btn-ghost btn-sm" onclick="imprimirSolicitud('${s.id}')" title="Imprimir"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+      </td>
     </tr>
   `).join('');
 }
@@ -1525,40 +2073,132 @@ function verDetalle(id){
   toast(`${s.id}: ${s.proyecto} — ${exc>0?'Excedente '+exc+' m/u':'Sin excedente'}`,s.estado==='cerrado'?'ok':'warn');
 }
 
-// ===== FORMULARIO SOLICITUD =====
-const tipoSel=document.getElementById('s-tipo');
-tipoSel.addEventListener('change',()=>{
-  const notice=document.getElementById('solicitud-tuberia-notice');
-  notice.style.display=tipoSel.value==='Tubería PE rollo'?'block':'none';
-});
+// ===== FORMULARIO SOLICITUD (formato NPS) =====
+let materialesSolicitud = []; // filas de materiales en el formulario actual
+
+function renderFilasMateriales(){
+  const tbody = document.getElementById('nps-mat-rows');
+  if(!tbody) return;
+  const TOTAL_ROWS = 10;
+  let html = '';
+  for(let i=0;i<TOTAL_ROWS;i++){
+    const m = materialesSolicitud[i];
+    if(m){
+      html += `<tr>
+        <td class="nps-row-n">${i+1}</td>
+        <td>${m.codigo}</td>
+        <td>${m.nombre}</td>
+        <td style="text-align:center">${m.unidad}</td>
+        <td style="text-align:center">${m.cantidad}</td>
+        <td>${m.obs||''}</td>
+        <td class="btn-no-print" style="text-align:center">
+          <button type="button" style="border:none;background:none;cursor:pointer;color:var(--err);font-size:14px;line-height:1;padding:2px 4px" onclick="quitarMaterialSolicitud(${i})" title="Eliminar">×</button>
+        </td>
+      </tr>`;
+    } else {
+      html += `<tr class="nps-row-empty">
+        <td class="nps-row-n">${i+1}</td>
+        <td></td><td></td><td></td><td></td><td></td>
+        <td class="btn-no-print"></td>
+      </tr>`;
+    }
+  }
+  tbody.innerHTML = html;
+  // Mostrar aviso tubería si alguna fila la contiene
+  const hasTub = materialesSolicitud.some(m=>m.unidad==='ML'||m.nombre.toLowerCase().includes('tubería')||m.nombre.toLowerCase().includes('tuberia'));
+  document.getElementById('solicitud-tuberia-notice').style.display = hasTub?'block':'none';
+}
+
+function agregarMaterialSolicitud(){
+  if(materialesSolicitud.length >= 10){
+    toast('Máximo 10 materiales por solicitud','err'); return;
+  }
+  const codigo = document.getElementById('s-codigo').value.trim();
+  const nombre = document.getElementById('s-nombre-mat').value.trim();
+  const unidad = document.getElementById('s-unidad').value.trim();
+  const cantidad = parseFloat(document.getElementById('s-cantidad').value);
+  const obs = document.getElementById('s-obs-row').value.trim();
+  if(!codigo||!nombre){toast('Seleccione un material del catálogo','err');return;}
+  if(!cantidad||cantidad<=0){toast('Ingrese una cantidad válida','err');return;}
+  materialesSolicitud.push({codigo,nombre,unidad,cantidad,obs});
+  // limpiar campos de fila
+  document.getElementById('s-codigo').value='';
+  document.getElementById('s-nombre-mat').value='';
+  document.getElementById('s-unidad').value='';
+  document.getElementById('s-cantidad').value='';
+  document.getElementById('s-obs-row').value='';
+  renderFilasMateriales();
+  // actualizar número de form
+  document.getElementById('s-form-num').textContent=String(nextId).padStart(6,'0');
+}
+
+function quitarMaterialSolicitud(idx){
+  materialesSolicitud.splice(idx,1);
+  renderFilasMateriales();
+}
+
+function limpiarFormSolicitud(){
+  materialesSolicitud=[];
+  document.getElementById('form-solicitud').reset();
+  document.getElementById('s-nombre-mat').value='';
+  document.getElementById('s-unidad').value='';
+  document.getElementById('s-proyecto-hint').style.display='none';
+  document.getElementById('solicitud-tuberia-notice').style.display='none';
+  renderFilasMateriales();
+  // poner fecha de hoy
+  document.getElementById('s-fecha-sol').value=new Date().toISOString().slice(0,10);
+  document.getElementById('s-form-num').textContent=String(nextId).padStart(6,'0');
+}
+
+function imprimirFormSolicitud(){
+  window.print();
+}
+
+function onProyectoChange(){
+  const sel=document.getElementById('s-proyecto-sel');
+  const hint=document.getElementById('s-proyecto-hint');
+  const p=proyectos.find(x=>x.id===sel.value);
+  if(p){hint.textContent='Código: '+p.codigo+' · '+p.comuna+' · Gestor: '+p.gestor;hint.style.display='';}
+  else{hint.style.display='none';}
+}
+
 document.getElementById('form-solicitud').addEventListener('submit',e=>{
   e.preventDefault();
-  const proyecto=document.getElementById('s-proyecto').value.trim();
-  const codigo=document.getElementById('s-codigo').value.trim();
-  const tipo=document.getElementById('s-tipo').value;
-  const diametro=document.getElementById('s-diametro').value.trim();
-  const cantidad=parseFloat(document.getElementById('s-cantidad').value);
+  const proyId=document.getElementById('s-proyecto-sel').value;
+  const proy=proyectos.find(x=>x.id===proyId);
+  const proyecto=proy?proy.codigo:'';
   const solicitante=document.getElementById('s-solicitante').value.trim();
-  const obs=document.getElementById('s-obs').value.trim();
-  if(!proyecto||!codigo||!tipo||!diametro||!cantidad||!solicitante){
-    toast('Complete todos los campos obligatorios','err');return;
+  if(!proyecto||!solicitante){
+    toast('Seleccione un proyecto e ingrese el solicitante','err');return;
   }
-  const id='SOL-'+String(nextId++).padStart(3,'0');
-  const entregado=tipo==='Tubería PE rollo'?Math.ceil(cantidad/50)*50:cantidad;
-  const s={id,fecha:new Date().toISOString().slice(0,10),proyecto,codigo,tipo,diametro,solicitado:cantidad,entregado,solicitante,obs,estado:entregado>cantidad?'pendiente-dev':'cerrado',devuelto:0};
-  solicitudes.push(s);
-  toast(`Solicitud ${id} registrada correctamente`,'ok');
-  e.target.reset();
-  document.getElementById('solicitud-tuberia-notice').style.display='none';
+  if(materialesSolicitud.length===0){
+    toast('Agregue al menos un material a la solicitud','err');return;
+  }
+  const fecha=document.getElementById('s-fecha-sol').value||new Date().toISOString().slice(0,10);
+  let ids=[];
+  materialesSolicitud.forEach(m=>{
+    const id='SOL-'+String(nextId++).padStart(3,'0');
+    const esTuberia=m.unidad==='ML'||m.nombre.toLowerCase().includes('tubería')||m.nombre.toLowerCase().includes('tuberia');
+    const entregado=esTuberia?Math.ceil(m.cantidad/50)*50:m.cantidad;
+    const s={id,fecha,proyecto,codigo:m.codigo,nombreMat:m.nombre,unidad:m.unidad,tipo:esTuberia?'Tubería PE rollo':'Otro',diametro:'',solicitado:m.cantidad,entregado,solicitante,obs:m.obs||'',estado:entregado>m.cantidad?'pendiente-dev':'cerrado',devuelto:0,aprobacion:'pendiente'};
+    solicitudes.push(s);
+    ids.push(id);
+  });
+  toast(`${ids.length} solicitud(es) registrada(s) — enviadas a revisión (Erick)`,'ok');
+  limpiarFormSolicitud();
+  renderDashboard();
   setTimeout(()=>navigate('historial'),800);
 });
 
 // ===== DEVOLUCIÓN =====
 function renderDevolucion(){
+  // Populate project selector
+  poblarSelectProyectos('d-cod-proyecto');
+  // Populate solicitud selector (pending only)
   const sel=document.getElementById('d-solicitud');
   const pending=solicitudes.filter(s=>s.estado==='pendiente-dev');
-  sel.innerHTML='<option value="">Seleccionar solicitud...</option>'+
-    pending.map(s=>`<option value="${s.id}">${s.id} — ${s.proyecto} (${s.tipo}, exc. ${s.entregado-s.solicitado-s.devuelto} m/u)</option>`).join('');
+  sel.innerHTML='<option value="">Sin vincular...</option>'+
+    pending.map(s=>`<option value="${s.id}">${s.id} — ${s.proyecto} (exc. ${s.entregado-s.solicitado-s.devuelto} u)</option>`).join('');
   // pendientes list
   const pEl=document.getElementById('dev-pendientes');
   if(!pending.length){pEl.innerHTML='<div class="empty" style="padding:var(--sp8)"><p>No hay devoluciones pendientes ✓</p></div>';return;}
@@ -1566,10 +2206,13 @@ function renderDevolucion(){
     const exc=s.entregado-s.solicitado-s.devuelto;
     return`<div style="padding:var(--sp3) 0;border-bottom:1px solid var(--div)">
       <div style="font-size:var(--text-sm);font-weight:600">${s.id}</div>
-      <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.proyecto} · ${s.tipo}</div>
-      <div style="font-size:var(--text-xs);color:var(--warn);font-weight:600;margin-top:var(--sp1)">Excedente pendiente: ${exc} m/u</div>
+      <div style="font-size:var(--text-xs);color:var(--tx-m)">${s.proyecto} · ${s.tipo||''}</div>
+      <div style="font-size:var(--text-xs);color:var(--warn);font-weight:600;margin-top:var(--sp1)">Excedente pendiente: ${exc} u</div>
     </div>`;
   }).join('');
+}
+function onDevProyChange(){
+  // When project selected, hint about available materials
 }
 document.getElementById('d-solicitud').addEventListener('change',function(){
   const s=solicitudes.find(x=>x.id===this.value);
@@ -1578,31 +2221,45 @@ document.getElementById('d-solicitud').addEventListener('change',function(){
   const exc=s.entregado-s.solicitado-s.devuelto;
   det.style.display='block';
   det.innerHTML=`<div class="rule-box">
-    <div style="font-size:var(--text-xs);color:var(--tx-m);margin-bottom:var(--sp2)">Detalle de entrega</div>
+    <div style="font-size:var(--text-xs);color:var(--tx-m);margin-bottom:var(--sp2)">Detalle de solicitud vinculada</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp3);font-size:var(--text-xs)">
-      <div><div style="color:var(--tx-f)">Solicitado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.solicitado} m/u</div></div>
-      <div><div style="color:var(--tx-f)">Entregado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.entregado} m/u</div></div>
-      <div><div style="color:var(--tx-f)">A devolver</div><div style="font-weight:700;font-size:var(--text-sm);color:var(--warn)">${exc} m/u</div></div>
+      <div><div style="color:var(--tx-f)">Solicitado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.solicitado} u</div></div>
+      <div><div style="color:var(--tx-f)">Entregado</div><div style="font-weight:700;font-size:var(--text-sm)">${s.entregado} u</div></div>
+      <div><div style="color:var(--tx-f)">A devolver</div><div style="font-weight:700;font-size:var(--text-sm);color:var(--warn)">${exc} u</div></div>
     </div>
   </div>`;
   document.getElementById('d-cantidad').value=exc;
+  // Auto-fill fields from linked solicitud
+  if(s.codigo){document.getElementById('d-cod-material').value=s.codigo;}
+  if(s.nombreMat){document.getElementById('d-nombre-mat').value=s.nombreMat;}
+  if(s.unidad){document.getElementById('d-unidad').value=s.unidad;}
 });
 document.getElementById('form-devolucion').addEventListener('submit',e=>{
   e.preventDefault();
-  const id=document.getElementById('d-solicitud').value;
+  const usuario=document.getElementById('d-usuario').value.trim();
+  const codProyecto=document.getElementById('d-cod-proyecto').value;
+  const codMaterial=document.getElementById('d-cod-material').value.trim();
+  const nombreMat=document.getElementById('d-nombre-mat').value.trim();
+  const unidad=document.getElementById('d-unidad').value.trim();
   const cant=parseFloat(document.getElementById('d-cantidad').value);
   const obs=document.getElementById('d-obs').value.trim();
-  if(!id||!cant){toast('Seleccione solicitud e ingrese cantidad','err');return;}
-  const s=solicitudes.find(x=>x.id===id);
-  if(!s)return;
-  s.devuelto+=cant;
-  const exc=s.entregado-s.solicitado-s.devuelto;
-  if(exc<=0)s.estado='cerrado';
-  // Devolver al stock
-  const mat=stock.find(m=>m.codigo===s.codigo);
+  if(!usuario||!codProyecto||!codMaterial||!cant){
+    toast('Complete los campos obligatorios: usuario, proyecto, material y cantidad','err');return;
+  }
+  const proy=proyectos.find(x=>x.id===codProyecto);
+  // Vincular a solicitud si se eligió
+  const solId=document.getElementById('d-solicitud').value;
+  if(solId){
+    const s=solicitudes.find(x=>x.id===solId);
+    if(s){s.devuelto+=cant;if(s.entregado-s.solicitado-s.devuelto<=0)s.estado='cerrado';}
+  }
+  // Devolver al stock si existe
+  const mat=stock.find(m=>m.codigo===codMaterial);
   if(mat)mat.disponible=Math.min(mat.total,mat.disponible+cant);
-  toast(`Devolución de ${cant} m/u registrada — ${s.id}`,'ok');
+  toast(`Devolución de ${cant} ${unidad||'u'} registrada — ${proy?proy.codigo:codProyecto}`,'ok');
   e.target.reset();
+  document.getElementById('d-nombre-mat').value='';
+  document.getElementById('d-unidad').value='';
   document.getElementById('d-detalle').style.display='none';
   renderDevolucion();
 });
@@ -2600,6 +3257,388 @@ document.getElementById('form-factura').addEventListener('submit',e=>{
 });
 
 // ===== NAVIGATE INVENTORY =====
+
+// ===== CATÁLOGO DE MATERIALES =====
+const catalogMateriales = {
+  '101624':{nombre:'Tapping Tee PE 50-25 mm',unidad:'C/U'},
+  '300109':{nombre:'Risers de Acero 3/4" Bsp x 25 mm',unidad:'C/U'},
+  '301099':{nombre:'Válvula PE100 Dn 25mm',unidad:'C/U'},
+  '301329':{nombre:'Copla PE100 025mm EF',unidad:'C/U'},
+  '301666':{nombre:'Tapping Tee PE 110-25 mm',unidad:'C/U'},
+  '301749':{nombre:'Tubería PE80 025mm Rollo',unidad:'ML'},
+  '301987':{nombre:'Codo PE100 90° 063mm EF',unidad:'C/U'},
+  '302065':{nombre:'Tubería PE80 110mm Tira',unidad:'ML'},
+  '302184':{nombre:'Tapa Tornillo',unidad:'C/U'},
+  '302737':{nombre:'Válvula Bola 3/4" Hi Un Cuerpo Pn5',unidad:'C/U'},
+  '303345':{nombre:'Copla PE100 050mm EF',unidad:'C/U'},
+  '303368':{nombre:'Cinta Plástica Línea GN 30x0.1',unidad:'MTS'},
+  '1002167':{nombre:'Cable Trazador Cu 14 AWG THW Rojo',unidad:'MTS'},
+  '2002262':{nombre:'Tubería PE80 050mm Rollo',unidad:'ML'},
+  '2002263':{nombre:'Tubería PE80 063mm Rollo',unidad:'ML'},
+  '2003911':{nombre:'Válvula EFv PE 25 mm Para Tap. Tee',unidad:'C/U'},
+  '2006391':{nombre:'Guardallave Fierro Fundido C/Tapa',unidad:'C/U'},
+  '2007948':{nombre:'Tubo PVC Hidraulico 110mm Pn6',unidad:'ML'},
+};
+
+// ===== ESTADO NUEVO: SOLICITUDES ADICIONALES Y SOBRANTES =====
+let solicitudesAdicionales = [];
+let nextSolAdicId = 1;
+let sobrantes = [];
+let nextSobId = 1;
+
+// Agregar aprobacion a solicitudes demo existentes
+solicitudes.forEach(s=>{if(!s.aprobacion)s.aprobacion='despachado';});
+
+// ===== ROLE SYSTEM =====
+let currentRole = 'admin';
+function toggleRole(){
+  currentRole = currentRole==='admin'?'solicitante':'admin';
+  document.body.className = 'role-'+currentRole;
+  document.getElementById('role-label').textContent = currentRole==='admin'?'Administrador':'Solicitante';
+  const btn=document.getElementById('role-toggle-btn');
+  btn.className='role-pill '+(currentRole==='admin'?'is-admin':'is-sol');
+  if(currentRole==='solicitante') navigate('solicitudes');
+}
+document.body.className='role-admin';
+
+// ===== POBLAR SELECTS DE PROYECTOS =====
+function poblarSelectProyectos(id, vaciaTxt='Seleccionar proyecto...'){
+  const sel=document.getElementById(id);
+  if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=`<option value="">${vaciaTxt}</option>`+
+    proyectos.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${p.codigo}</option>`).join('');
+}
+function poblarTodosSelectsProyectos(){
+  ['s-proyecto-sel','d-cod-proyecto','sa-proyecto','sob-proyecto','sob-proy-destino','consumo-f-proyecto'].forEach(id=>poblarSelectProyectos(id,'Seleccionar proyecto...'));
+  // consumo filter - "todos" option
+  const cSel=document.getElementById('consumo-f-proyecto');
+  if(cSel){const first=`<option value="">Todos los proyectos</option>`;cSel.innerHTML=first+proyectos.map(p=>`<option value="${p.id}">${p.codigo}</option>`).join('');}
+}
+
+// ===== AUTOCOMPLETE GENÉRICO =====
+const _acCallbacks={};
+function buscarEnCatalogo(q){
+  q=(q||'').toLowerCase();
+  if(!q)return[];
+  return Object.entries(catalogMateriales)
+    .filter(([cod,m])=>cod.includes(q)||m.nombre.toLowerCase().includes(q))
+    .slice(0,8).map(([cod,m])=>({codigo:cod,...m}));
+}
+function mostrarAutoList(listId, items, onSelectFn){
+  const el=document.getElementById(listId);
+  if(!el)return;
+  if(!items.length){el.style.display='none';return;}
+  _acCallbacks[listId]={items,fn:onSelectFn};
+  el.style.display='block';
+  el.innerHTML=items.map((m,i)=>`<div class="autocomplete-item" onmousedown="event.preventDefault()" onclick="seleccionarAC('${listId}',${i})"><strong>${m.codigo}</strong> — ${m.nombre} <span style="color:var(--tx-f);margin-left:4px">[${m.unidad}]</span></div>`).join('');
+}
+function seleccionarAC(listId,idx){
+  const cb=_acCallbacks[listId];
+  if(!cb)return;
+  cb.fn(cb.items[idx]);
+  document.getElementById(listId).style.display='none';
+}
+function setMaterialFields(codigoInputId, nombreInputId, unidadInputId, m){
+  document.getElementById(codigoInputId).value=m.codigo;
+  document.getElementById(nombreInputId).value=m.nombre;
+  document.getElementById(unidadInputId).value=m.unidad;
+}
+
+// ===== AUTOCOMPLETE — NUEVA SOLICITUD =====
+function onCodigoSolInput(v){
+  const items=buscarEnCatalogo(v);
+  mostrarAutoList('sol-autocomplete',items,m=>setMaterialFields('s-codigo','s-nombre-mat','s-unidad',m));
+  // Direct code match
+  if(catalogMateriales[v]){
+    document.getElementById('s-nombre-mat').value=catalogMateriales[v].nombre;
+    document.getElementById('s-unidad').value=catalogMateriales[v].unidad;
+    document.getElementById('s-unidad-hint').textContent='Unidad: '+catalogMateriales[v].unidad;
+  }
+}
+function cerrarAutocompleteSol(){document.getElementById('sol-autocomplete').style.display='none';}
+
+// ===== AUTOCOMPLETE — DEVOLUCIÓN =====
+function onCodigoDevInput(v){
+  const items=buscarEnCatalogo(v);
+  mostrarAutoList('dev-autocomplete',items,m=>setMaterialFields('d-cod-material','d-nombre-mat','d-unidad',m));
+  if(catalogMateriales[v]){document.getElementById('d-nombre-mat').value=catalogMateriales[v].nombre;document.getElementById('d-unidad').value=catalogMateriales[v].unidad;}
+}
+function cerrarAutocompleteDev(){document.getElementById('dev-autocomplete').style.display='none';}
+
+// ===== AUTOCOMPLETE — SOLICITUD ADICIONAL =====
+function onCodigoSaInput(v){
+  const items=buscarEnCatalogo(v);
+  mostrarAutoList('sa-autocomplete',items,m=>setMaterialFields('sa-codigo','sa-nombre','sa-unidad',m));
+  if(catalogMateriales[v]){document.getElementById('sa-nombre').value=catalogMateriales[v].nombre;document.getElementById('sa-unidad').value=catalogMateriales[v].unidad;}
+}
+function cerrarAutocompleteSa(){document.getElementById('sa-autocomplete').style.display='none';}
+
+// ===== AUTOCOMPLETE — SOBRANTES =====
+function onCodigoSobInput(v){
+  const items=buscarEnCatalogo(v);
+  mostrarAutoList('sob-autocomplete',items,m=>setMaterialFields('sob-codigo','sob-nombre','sob-unidad',m));
+  if(catalogMateriales[v]){document.getElementById('sob-nombre').value=catalogMateriales[v].nombre;document.getElementById('sob-unidad').value=catalogMateriales[v].unidad;}
+}
+function cerrarAutocompleteSob(){document.getElementById('sob-autocomplete').style.display='none';}
+
+// ===== FLUJO DE APROBACIÓN =====
+function avanzarAprobacion(id){
+  const s=solicitudes.find(x=>x.id===id);
+  if(!s)return;
+  const flow={pendiente:'revision',revision:'aprobado',aprobado:'despachado'};
+  const msgs={revision:'Enviado a revisión — Erick notificado',aprobado:'Solicitud aprobada — Ronny notificado para despacho',despachado:'Material despachado por Ronny — proceso completado'};
+  const ns=flow[s.aprobacion||'pendiente'];
+  if(!ns)return;
+  s.aprobacion=ns;
+  toast(msgs[ns],'ok');
+  renderHistorial();
+  renderDashboard();
+}
+
+// ===== IMPRIMIR SOLICITUD =====
+function imprimirSolicitud(id){
+  const s=solicitudes.find(x=>x.id===id);
+  if(!s)return;
+  const w=window.open('','_blank','width=800,height=600');
+  if(!w)return;
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Solicitud ${s.id}</title>
+  <style>body{font-family:Arial,sans-serif;padding:2rem;color:#111;max-width:700px;margin:0 auto}h2{color:#01696f;border-bottom:2px solid #01696f;padding-bottom:.5rem}table{width:100%;border-collapse:collapse;margin-top:1.5rem}th,td{padding:.6rem .8rem;border:1px solid #ccc;text-align:left;font-size:.85rem}th{background:#f4f4f4;font-weight:700;color:#555}.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:700}.b-ok{background:#d2dfc9;color:#3d7020}.b-info{background:#c8daea;color:#0060a0}.footer{margin-top:2rem;font-size:.75rem;color:#888;border-top:1px solid #ccc;padding-top:.5rem}@media print{button{display:none}}</style></head>
+  <body>
+  <h2>Solicitud de Materiales — ${s.id}</h2>
+  <table>
+    <tr><th>Fecha</th><td>${s.fecha}</td><th>Estado aprobación</th><td><span class="badge b-info">${s.aprobacion||'—'}</span></td></tr>
+    <tr><th>Proyecto</th><td>${s.proyecto}</td><th>Solicitante</th><td>${s.solicitante}</td></tr>
+    <tr><th>Código material</th><td>${s.codigo}</td><th>Nombre material</th><td>${s.nombreMat||s.tipo||'—'}</td></tr>
+    <tr><th>Unidad de medida</th><td>${s.unidad||'—'}</td><th>Especificación</th><td>${s.diametro||'—'}</td></tr>
+    <tr><th>Cantidad solicitada</th><td>${s.solicitado}</td><th>Cantidad entregada</th><td>${s.entregado}</td></tr>
+    <tr><th>Estado devolución</th><td><span class="badge ${s.estado==='cerrado'?'b-ok':'b-info'}">${s.estado}</span></td><th>Devuelto</th><td>${s.devuelto||0}</td></tr>
+    ${s.obs?`<tr><th>Observaciones</th><td colspan="3">${s.obs}</td></tr>`:''}
+  </table>
+  <div class="footer">Bodega NPS Metrogas · Generado: ${new Date().toLocaleString('es-CL')}</div>
+  <script>setTimeout(()=>{window.print();},400);<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ===== DESCARGAR HISTORIAL CSV =====
+function descargarHistorialCSV(){
+  const headers=['ID','Fecha','Proyecto','Código','Nombre Material','Unidad','Tipo','Solicitado','Entregado','Estado Dev.','Aprobación','Solicitante'];
+  const rows=solicitudes.map(s=>[s.id,s.fecha,s.proyecto,s.codigo,s.nombreMat||'',s.unidad||'',s.tipo||'',s.solicitado,s.entregado,s.estado,s.aprobacion||'pendiente',s.solicitante]);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historial-solicitudes.csv';a.click();
+}
+
+// ===== RENDER SOLICITUD ADICIONAL =====
+function onSaProyChange(){}
+function renderSolAdicional(){
+  poblarSelectProyectos('sa-proyecto');
+  const wrap=document.getElementById('sa-historial-wrap');
+  if(!solicitudesAdicionales.length){
+    wrap.innerHTML='<div class="empty" style="padding:var(--sp8)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Sin solicitudes adicionales registradas</p></div>';
+    return;
+  }
+  wrap.innerHTML='<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Proyecto</th><th>Código / Material</th><th>Unidad</th><th class="td-num">Cant.</th><th>Solicitante</th><th>Respaldo</th><th>Estado</th></tr></thead><tbody>'+
+    [...solicitudesAdicionales].reverse().map(s=>`<tr>
+      <td>${s.fecha}</td><td style="font-weight:600">${s.proyecto}</td>
+      <td style="font-size:var(--text-xs)">${s.codigo}<br><span style="color:var(--tx-m)">${s.nombre}</span></td>
+      <td>${s.unidad}</td><td class="td-num">${s.cantidad}</td><td>${s.solicitante}</td>
+      <td>${s.respaldo?'<span class="tag badge-ok">Adjunto</span>':'<span class="tag badge-warn">Sin adjunto</span>'}</td>
+      <td>${aprobBadge(s.aprobacion||'pendiente')}</td>
+    </tr>`).join('')+
+  '</tbody></table></div>';
+}
+document.getElementById('form-sol-adicional').addEventListener('submit',e=>{
+  e.preventDefault();
+  const solicitante=document.getElementById('sa-solicitante').value.trim();
+  const proyId=document.getElementById('sa-proyecto').value;
+  const proy=proyectos.find(x=>x.id===proyId);
+  const codigo=document.getElementById('sa-codigo').value.trim();
+  const nombre=document.getElementById('sa-nombre').value.trim();
+  const unidad=document.getElementById('sa-unidad').value.trim();
+  const cantidad=parseFloat(document.getElementById('sa-cantidad').value);
+  const fileInput=document.getElementById('sa-respaldo');
+  const obs=document.getElementById('sa-obs').value.trim();
+  if(!solicitante||!proyId||!codigo||!cantidad){toast('Complete los campos obligatorios','err');return;}
+  solicitudesAdicionales.push({id:'SA-'+String(nextSolAdicId++).padStart(3,'0'),fecha:new Date().toISOString().slice(0,10),solicitante,proyecto:proy?proy.codigo:proyId,codigo,nombre,unidad,cantidad,obs,respaldo:fileInput.files.length>0,aprobacion:'pendiente'});
+  toast('Solicitud adicional registrada — enviada a revisión','ok');
+  e.target.reset();
+  document.getElementById('sa-nombre').value='';document.getElementById('sa-unidad').value='';
+  renderSolAdicional();
+});
+
+// ===== RENDER CONSUMO =====
+function renderConsumo(){
+  poblarTodosSelectsProyectos();
+  const fp=document.getElementById('consumo-f-proyecto').value;
+  const fe=document.getElementById('consumo-f-estado').value;
+  let items=[];
+  proyectos.forEach(p=>{
+    if(fp&&p.id!==fp)return;
+    const seg=proyMateriales[p.id];
+    if(!seg||!seg.items.length)return;
+    seg.items.forEach(it=>{
+      const totalAsig=it.cantidad;
+      const totalRet=seg.fechas.reduce((a,_,fi)=>a+(Number(it.vals[fi]?.entregado)||0),0);
+      const saldo=totalAsig-totalRet;
+      const pct=totalAsig>0?Math.round(totalRet/totalAsig*100):0;
+      const estado=saldo<=0?'agotado':pct>=75?'bajo':'ok';
+      if(fe&&estado!==fe)return;
+      items.push({proyecto:p.codigo,proyId:p.id,codigo:it.codigo,nombre:it.desc,unidad:it.cat,totalAsig,totalRet,saldo,pct,estado});
+    });
+  });
+  document.getElementById('consumo-count').textContent=items.length+' materiales';
+  const bajo=items.filter(x=>x.estado==='bajo').length;
+  const agotado=items.filter(x=>x.estado==='agotado').length;
+  document.getElementById('consumo-kpi-area').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Materiales seguidos</div><div class="kpi-value">${items.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Bajo stock (≥75%)</div><div class="kpi-value" style="color:var(--warn)">${bajo}</div><div class="kpi-sub"><span class="kpi-badge badge-warn">Solicitar adicional</span></div></div>
+    <div class="kpi"><div class="kpi-label">Agotado / excedido</div><div class="kpi-value" style="color:var(--err)">${agotado}</div></div>
+  `;
+  const grid=document.getElementById('consumo-grid-area');
+  const empty=document.getElementById('consumo-empty');
+  if(!items.length){grid.innerHTML='';empty.style.display='flex';return;}
+  empty.style.display='none';
+  const byProy={};
+  items.forEach(it=>{if(!byProy[it.proyId])byProy[it.proyId]={codigo:it.proyecto,items:[]};byProy[it.proyId].items.push(it);});
+  grid.innerHTML=Object.values(byProy).map(pg=>`
+    <div class="consumo-card">
+      <div class="consumo-card-title">${pg.codigo}</div>
+      ${pg.items.map(it=>{
+        const barCls=it.estado==='agotado'?'fill-consumo-crit':it.estado==='bajo'?'fill-consumo-warn':'fill-consumo-ok';
+        const badgeCls=it.estado==='agotado'?'stock-crit':it.estado==='bajo'?'stock-bajo':'stock-disp';
+        const badgeTxt=it.estado==='agotado'?'Sin stock':it.estado==='bajo'?'Bajo stock':'Disponible';
+        return`<div class="consumo-item">
+          <div class="consumo-item-name"><span style="font-size:var(--text-xs)">${it.codigo} — ${it.nombre}</span><span class="estado-stock-badge ${badgeCls}">${badgeTxt}</span></div>
+          <div class="consumo-bar"><div class="consumo-bar-fill ${barCls}" style="width:${Math.min(it.pct,100)}%"></div></div>
+          <div class="consumo-nums">
+            <div class="consumo-num-item"><span class="consumo-num-label">Asignado</span><span class="consumo-num-val">${it.totalAsig} ${it.unidad}</span></div>
+            <div class="consumo-num-item"><span class="consumo-num-label">Retirado</span><span class="consumo-num-val">${it.totalRet} ${it.unidad}</span></div>
+            <div class="consumo-num-item"><span class="consumo-num-label">Saldo</span><span class="consumo-num-val" style="color:${it.saldo<=0?'var(--err)':it.estado==='bajo'?'var(--warn)':'var(--ok)'}">${it.saldo} ${it.unidad}</span></div>
+            <div class="consumo-num-item"><span class="consumo-num-label">Consumo</span><span class="consumo-num-val">${it.pct}%</span></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+// ===== RENDER SOBRANTES =====
+function abrirModalSobrante(){
+  poblarSelectProyectos('sob-proyecto');poblarSelectProyectos('sob-proy-destino');
+  document.getElementById('form-sobrante').reset();
+  document.getElementById('sob-nombre').value='';document.getElementById('sob-unidad').value='';
+  document.getElementById('sob-proy-destino-wrap').style.display='none';
+  openModal('modal-sobrante');
+}
+document.getElementById('sob-decision').addEventListener('change',function(){
+  document.getElementById('sob-proy-destino-wrap').style.display=this.value==='reasignado'?'':'none';
+});
+document.getElementById('form-sobrante').addEventListener('submit',e=>{
+  e.preventDefault();
+  const proyId=document.getElementById('sob-proyecto').value;
+  const proy=proyectos.find(x=>x.id===proyId);
+  const codigo=document.getElementById('sob-codigo').value.trim();
+  const nombre=document.getElementById('sob-nombre').value.trim();
+  const unidad=document.getElementById('sob-unidad').value.trim();
+  const cantidad=parseFloat(document.getElementById('sob-cantidad').value);
+  const decision=document.getElementById('sob-decision').value;
+  const destId=document.getElementById('sob-proy-destino').value;
+  const proyDest=proyectos.find(x=>x.id===destId);
+  const obs=document.getElementById('sob-obs').value.trim();
+  if(!proyId||!codigo||!cantidad){toast('Complete los campos obligatorios','err');return;}
+  sobrantes.push({id:'SOB-'+String(nextSobId++).padStart(3,'0'),fecha:new Date().toISOString().slice(0,10),proyecto:proy?proy.codigo:proyId,codigo,nombre,unidad,cantidad,decision,proyDestino:proyDest?proyDest.codigo:'',obs});
+  toast('Sobrante registrado correctamente','ok');
+  closeModal('modal-sobrante');renderSobrantes();
+});
+function actualizarDecisionSobrante(idx,nuevaDec){
+  if(sobrantes[idx])sobrantes[idx].decision=nuevaDec;
+  toast('Estado actualizado','ok');renderSobrantes();
+}
+function renderSobrantes(){
+  poblarSelectProyectos('sob-proyecto');poblarSelectProyectos('sob-proy-destino');
+  const q=(document.getElementById('sob-search').value||'').toLowerCase();
+  const fe=document.getElementById('sob-f-estado').value;
+  let arr=sobrantes.map((s,i)=>({...s,_idx:i})).filter(s=>{
+    const mq=!q||(s.codigo+s.nombre+s.proyecto).toLowerCase().includes(q);
+    return mq&&(!fe||s.decision===fe);
+  });
+  document.getElementById('sob-count').textContent=arr.length+' registros';
+  const pend=sobrantes.filter(x=>x.decision==='pendiente').length;
+  const dev=sobrantes.filter(x=>x.decision==='devolver').length;
+  const rea=sobrantes.filter(x=>x.decision==='reasignado').length;
+  document.getElementById('sobrantes-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Total sobrantes</div><div class="kpi-value">${sobrantes.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Pendiente decisión</div><div class="kpi-value" style="color:var(--warn)">${pend}</div></div>
+    <div class="kpi"><div class="kpi-label">A devolver Metrogas</div><div class="kpi-value" style="color:var(--err)">${dev}</div></div>
+    <div class="kpi"><div class="kpi-label">Reasignados</div><div class="kpi-value" style="color:var(--ok)">${rea}</div></div>
+  `;
+  const list=document.getElementById('sobrantes-list');
+  if(!arr.length){list.innerHTML='<div class="empty" style="padding:var(--sp12)"><p>No hay materiales sobrantes registrados</p></div>';return;}
+  const decBadgeMap={pendiente:'<span class="tag badge-warn">Pendiente</span>',devolver:'<span class="tag badge-err">Devolver Metrogas</span>',reasignado:'<span class="tag badge-ok">Reasignado</span>',devuelto:'<span class="tag badge-neu">Devuelto</span>'};
+  list.innerHTML=arr.map(s=>`<div class="sobrante-item" style="margin-bottom:var(--sp3)">
+    <div class="sobrante-info">
+      <div class="sobrante-code">${s.codigo} — ${s.proyecto}</div>
+      <div class="sobrante-nombre">${s.nombre||'—'}</div>
+      <div class="sobrante-meta">${s.cantidad} ${s.unidad||'u'} · ${s.fecha}${s.proyDestino?' → '+s.proyDestino:''}</div>
+    </div>
+    ${decBadgeMap[s.decision]||''}
+    <div class="sobrante-actions">
+      ${s.decision==='pendiente'?`<button class="btn btn-sm btn-secondary" onclick="actualizarDecisionSobrante(${s._idx},'devolver')">Devolver Metrogas</button><button class="btn btn-sm btn-secondary" onclick="actualizarDecisionSobrante(${s._idx},'reasignado')">Reasignar</button>`:''}
+      ${s.decision==='devolver'?`<button class="btn btn-sm btn-primary" onclick="actualizarDecisionSobrante(${s._idx},'devuelto')">Confirmar devolución</button>`:''}
+    </div>
+  </div>`).join('');
+}
+
+// ===== RENDER ALERTAS =====
+function renderAlertas(){
+  const hoy=new Date('2026-04-12');
+  const ft=(document.getElementById('alert-f-tipo')||{value:''}).value;
+  const alertas=invEntradas.filter(e=>e.fechaTub).map(e=>{
+    const dt=new Date(e.fechaTub);
+    const dias=Math.floor((hoy-dt)/(1000*60*60*24));
+    const tipo=dias>=90?'vencido':dias>=60?'critico':dias>=30?'proximo':null;
+    return tipo?{...e,dias,tipo}:null;
+  }).filter(Boolean).filter(a=>!ft||a.tipo===ft).sort((a,b)=>b.dias-a.dias);
+  document.getElementById('alert-count').textContent=alertas.length+' alertas';
+  const v=alertas.filter(a=>a.tipo==='vencido').length;
+  const c=alertas.filter(a=>a.tipo==='critico').length;
+  const p=alertas.filter(a=>a.tipo==='proximo').length;
+  document.getElementById('alertas-kpi').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Vencido +90 días</div><div class="kpi-value" style="color:var(--err)">${v}</div><div class="kpi-sub"><span class="kpi-badge badge-err">Acción urgente</span></div></div>
+    <div class="kpi"><div class="kpi-label">Crítico 60–90 días</div><div class="kpi-value" style="color:var(--warn)">${c}</div></div>
+    <div class="kpi"><div class="kpi-label">Próximo 30–60 días</div><div class="kpi-value" style="color:var(--info)">${p}</div></div>
+  `;
+  const total=v+c;
+  const badge=document.getElementById('alerta-count-badge');
+  if(badge){badge.textContent=total;badge.style.display=total>0?'':'none';}
+  const list=document.getElementById('alertas-list');
+  const empty=document.getElementById('alertas-empty');
+  if(!alertas.length){list.innerHTML='';empty.style.display='flex';return;}
+  empty.style.display='none';
+  list.innerHTML=alertas.map(a=>{
+    const cls=a.tipo==='vencido'?'alerta-90':a.tipo==='critico'?'alerta-60':'alerta-30';
+    const col=a.tipo==='vencido'?'var(--err)':a.tipo==='critico'?'var(--warn)':'var(--info)';
+    const bCls=a.tipo==='vencido'?'badge-err':a.tipo==='critico'?'badge-warn':'badge-info';
+    const diasTxt=a.tipo==='vencido'?`+${a.dias} días — VENCIDO`:`${a.dias} días`;
+    return`<div class="alerta-card ${cls}">
+      <div class="alerta-icon" style="background:color-mix(in oklch,${col} 15%,transparent)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="alerta-body-txt">
+        <div class="alerta-title">${a.codigo} — ${a.desc}</div>
+        <div class="alerta-desc">Proyecto: <strong>${a.proyecto||'—'}</strong> · Cant: ${a.cantidad} · Fecha tub: ${a.fechaTub} · Guía: ${a.nguia||'—'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--sp2);flex-shrink:0">
+        <span class="kpi-badge ${bCls}">${diasTxt}</span>
+        <button class="btn btn-sm btn-secondary" onclick="navigate('sobrantes')">Gestionar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== INICIALIZACIÓN =====
+poblarTodosSelectsProyectos();
 
 renderDashboard();
 </script>
