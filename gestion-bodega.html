@@ -344,19 +344,34 @@ tr:hover td{background:color-mix(in oklch,var(--surf-off) 50%,transparent)}
 }
 
 /* ===== ROLE SYSTEM ===== */
+/* admin-only: oculto a solicitante y bodeguero */
 .nav-item.role-admin-only,.nav-label.role-admin-only{display:none!important}
 body.role-admin .nav-item.role-admin-only{display:flex!important}
 body.role-admin .nav-label.role-admin-only{display:block!important}
+/* sol-hide: oculto solo a solicitante */
 .nav-item.role-sol-hide{display:flex}
 body.role-solicitante .nav-item.role-sol-hide{display:none!important}
 .nav-label.role-sol-hide{display:block}
 body.role-solicitante .nav-label.role-sol-hide{display:none!important}
+/* bod-hide: oculto solo a bodeguero */
+body.role-bodeguero .nav-item.role-bod-hide{display:none!important}
+body.role-bodeguero .nav-label.role-bod-hide{display:none!important}
+/* admin-hide: oculto solo a admin (visible a sol y bod) */
+.nav-item.role-admin-hide,.nav-label.role-admin-hide{display:none!important}
+body.role-solicitante .nav-item.role-admin-hide{display:flex!important}
+body.role-bodeguero .nav-item.role-admin-hide{display:flex!important}
+body.role-bodeguero .nav-label.role-admin-hide{display:block!important}
+/* admin-only también oculto a bodeguero */
+body.role-bodeguero .nav-item.role-admin-only{display:none!important}
+body.role-bodeguero .nav-label.role-admin-only{display:none!important}
+/* revisión: visible a admin y bodeguero, no a solicitante (usa role-sol-hide) */
 
 /* ===== ROLE TOGGLE BUTTON ===== */
 .role-pill{display:inline-flex;align-items:center;gap:var(--sp2);padding:3px 10px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700;border:1.5px solid var(--bord);background:var(--surf2);color:var(--tx-m);cursor:pointer;transition:all var(--tr)}
 .role-pill:hover{border-color:var(--pri);color:var(--pri)}
 .role-pill.is-admin{border-color:var(--pri);background:var(--pri-hl);color:var(--pri)}
 .role-pill.is-sol{border-color:var(--ok);background:var(--ok-hl);color:var(--ok)}
+.role-pill.is-bod{border-color:var(--info);background:var(--info-hl);color:var(--info)}
 
 /* ===== APPROVAL BADGES ===== */
 .aprov-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--r-full);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
@@ -451,7 +466,7 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
 .nps-table-personnel td input[type=text],.nps-table-personnel td input[type=date]{border:none;background:transparent;outline:none;font-size:12px;width:100%;padding:2px 2px;color:var(--tx)}
 .nps-table-personnel td input[type=text]:focus,.nps-table-personnel td input[type=date]:focus{border-bottom:1.5px solid var(--pri)}
 .nps-label-cell{width:130px;font-weight:600;font-size:11px;color:var(--tx-m);white-space:nowrap}
-.nps-firma-cell{width:90px;min-height:36px;background:repeating-linear-gradient(transparent,transparent 17px,var(--bdr) 17px,var(--bdr) 18px);opacity:.5}
+.nps-firma-cell{width:130px;padding:0!important;vertical-align:top}
 /* Materials table */
 .nps-table-mat{width:100%;border-collapse:collapse;font-size:12px}
 .nps-table-mat th{background:var(--surf-off);font-weight:700;font-size:10px;letter-spacing:.3px;padding:5px 6px;border:1px solid var(--bdr);text-transform:uppercase;text-align:center;white-space:nowrap}
@@ -477,6 +492,74 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
 .nps-tuberia-note input{border:none;border-bottom:1px solid var(--bdr);outline:none;padding:1px 4px;background:transparent;font-size:11px;width:180px;color:var(--tx)}
 /* Hint below SAP */
 #s-proyecto-hint{font-size:10px;color:var(--tx-m);padding:2px 0}
+
+/* ===== SIGNATURE PAD ===== */
+.sig-wrap{border:1.5px solid var(--bdr);border-radius:var(--r-sm);background:var(--surf);overflow:hidden;display:flex;flex-direction:column}
+.sig-canvas{display:block;width:100%;cursor:crosshair;touch-action:none}
+.sig-toolbar{display:flex;align-items:center;justify-content:space-between;padding:3px 8px;background:var(--surf-off);border-top:1px solid var(--bdr)}
+.sig-toolbar span{font-size:10px;color:var(--tx-m)}
+.sig-clear{border:none;background:none;cursor:pointer;font-size:11px;color:var(--err);padding:2px 6px;border-radius:var(--r-sm);font-family:inherit}
+.sig-clear:hover{background:color-mix(in srgb,var(--err) 10%,transparent)}
+/* Inside NPS firma cells */
+.nps-firma-cell .sig-wrap{border:none;border-radius:0}
+.nps-firma-cell .sig-canvas{height:44px}
+.nps-firma-cell .sig-toolbar{padding:2px 6px}
+/* Revision approval signature */
+.rev-sig-wrap{padding:var(--sp3) var(--sp5);border-top:1px solid var(--bdr);background:var(--surf);display:flex;align-items:flex-start;gap:var(--sp4);flex-wrap:wrap}
+.rev-sig-label{font-size:var(--text-xs);font-weight:700;color:var(--tx-m);white-space:nowrap;padding-top:4px}
+.rev-sig-canvas-wrap{flex:1;min-width:180px;max-width:320px}
+
+/* ===== MIS SOLICITUDES ===== */
+.mis-sol-filter{display:flex;gap:var(--sp3);flex-wrap:wrap;align-items:center}
+.mis-sol-filter input,.mis-sol-filter select{flex:1;min-width:160px;border:1px solid var(--bdr);border-radius:var(--r-sm);padding:6px 10px;font-size:var(--text-sm);background:var(--surf);color:var(--tx);outline:none}
+.mis-sol-filter input:focus,.mis-sol-filter select:focus{border-color:var(--pri)}
+.mis-group-title{font-size:var(--text-xs);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--tx-m);padding:var(--sp3) var(--sp4) var(--sp2);margin-top:var(--sp2);background:var(--surf-off);border-top:1.5px solid var(--bdr);border-bottom:1px solid var(--bdr)}
+.mis-row{display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--bdr);font-size:var(--text-sm)}
+.mis-row:last-child{border-bottom:none}
+.mis-row:hover{background:var(--surf-off)}
+.mis-row-id{font-variant-numeric:tabular-nums;font-size:var(--text-xs);font-weight:700;color:var(--tx-m)}
+.mis-row-mat{min-width:0}
+.mis-row-mat .mis-mat-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mis-row-mat .mis-mat-sub{font-size:var(--text-xs);color:var(--tx-m)}
+.mis-alert-badge{display:inline-flex;align-items:center;gap:3px;background:var(--warn-hl);color:var(--warn);border-radius:var(--r-full);padding:2px 8px;font-size:10px;font-weight:700;animation:pulse-warn 1.4s ease-in-out infinite}
+@keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.55}}
+.nav-mis-badge{margin-left:auto;background:var(--info);color:#fff;border-radius:var(--r-full);padding:1px 6px;font-size:10px;font-weight:700}
+
+/* ===== REVISIÓN DE SOLICITUDES ===== */
+.rev-card{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r-lg);overflow:hidden;margin-bottom:var(--sp6)}
+.rev-card.rev-excede{border-color:var(--err)}
+.rev-card.rev-ok{border-color:var(--ok)}
+.rev-card-header{display:flex;align-items:center;flex-wrap:wrap;gap:var(--sp3);padding:var(--sp4) var(--sp5);border-bottom:1px solid var(--bdr);background:var(--surf-off)}
+.rev-card.rev-excede .rev-card-header{background:color-mix(in srgb,var(--err) 8%,var(--surf))}
+.rev-card.rev-ok .rev-card-header{background:color-mix(in srgb,var(--ok) 8%,var(--surf))}
+.rev-sol-id{font-size:var(--text-xs);font-weight:700;font-variant-numeric:tabular-nums;color:var(--tx-m);letter-spacing:.05em}
+.rev-proy{font-weight:700;font-size:var(--text-sm);color:var(--tx);flex:1}
+.rev-meta{font-size:var(--text-xs);color:var(--tx-m)}
+/* comparison table */
+.rev-table{width:100%;border-collapse:collapse;font-size:12px}
+.rev-table th{background:var(--surf-off);padding:6px 10px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border-bottom:1.5px solid var(--bdr);text-align:center;white-space:nowrap}
+.rev-table th:nth-child(2){text-align:left}
+.rev-table td{padding:7px 10px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+.rev-table td:first-child,.rev-table td:nth-child(4),.rev-table td:nth-child(5),.rev-table td:nth-child(6),.rev-table td:nth-child(7){text-align:center;font-variant-numeric:tabular-nums}
+.rev-row-ok td{background:color-mix(in srgb,var(--ok) 5%,transparent)}
+.rev-row-excede td{background:color-mix(in srgb,var(--err) 7%,transparent)}
+.rev-row-nodata td{background:color-mix(in srgb,var(--warn) 5%,transparent)}
+.rev-badge-ok{display:inline-flex;align-items:center;gap:4px;background:var(--ok-hl);color:var(--ok);padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:700}
+.rev-badge-excede{display:inline-flex;align-items:center;gap:4px;background:color-mix(in srgb,var(--err) 15%,transparent);color:var(--err);padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:700}
+.rev-badge-nodata{display:inline-flex;align-items:center;gap:4px;background:var(--warn-hl);color:var(--warn);padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:700}
+/* causante */
+.rev-causante-wrap{padding:var(--sp4) var(--sp5);border-top:1px solid var(--bdr);background:color-mix(in srgb,var(--err) 5%,var(--surf));display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap}
+.rev-causante-wrap label{font-size:var(--text-xs);font-weight:700;color:var(--err);white-space:nowrap}
+.rev-causante-wrap input{flex:1;min-width:200px;border:1.5px solid var(--err);border-radius:var(--r-sm);padding:6px 10px;font-size:var(--text-sm);background:var(--surf);color:var(--tx);outline:none}
+.rev-causante-wrap input:focus{border-color:color-mix(in srgb,var(--err) 70%,#000)}
+/* actions footer */
+.rev-card-footer{display:flex;align-items:center;gap:var(--sp3);padding:var(--sp3) var(--sp5);border-top:1px solid var(--bdr);background:var(--surf-off)}
+.rev-block-msg{font-size:var(--text-xs);color:var(--err);flex:1}
+/* sidebar badge */
+.nav-rev-badge{margin-left:auto;background:var(--warn);color:#fff;border-radius:var(--r-full);padding:1px 6px;font-size:10px;font-weight:700}
+/* empty state */
+.rev-empty{text-align:center;padding:var(--sp10) var(--sp4);color:var(--tx-m)}
+.rev-empty svg{opacity:.25;margin-bottom:var(--sp4)}
 </style>
 </head>
 <body>
@@ -507,22 +590,39 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
     Dashboard
   </button>
   <div class="nav-label">Operaciones</div>
-  <button class="nav-item" data-nav="solicitudes">
+  <!-- Nueva Solicitud: sol y admin, NO bodeguero -->
+  <button class="nav-item role-bod-hide" data-nav="solicitudes">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     Nueva Solicitud
   </button>
-  <button class="nav-item" data-nav="sol-adicional">
+  <!-- Sol Adicional: sol y admin, NO bodeguero -->
+  <button class="nav-item role-bod-hide" data-nav="sol-adicional">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
     Solicitud Adicional
   </button>
+  <!-- Devolución: todos -->
   <button class="nav-item" data-nav="devolucion">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.75"/></svg>
     Devolución
   </button>
+  <!-- Revisión: admin y bodeguero (role-sol-hide) -->
+  <button class="nav-item role-sol-hide" data-nav="revision">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Revisión
+    <span id="rev-pending-badge" class="nav-rev-badge" style="display:none"></span>
+  </button>
+  <!-- Mis Solicitudes: sol y bodeguero (role-admin-hide) -->
+  <button class="nav-item role-admin-hide" data-nav="mis-solicitudes">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    Mis Solicitudes
+    <span id="mis-sol-badge" class="nav-mis-badge" style="display:none"></span>
+  </button>
+  <!-- Historial: admin y bodeguero -->
   <button class="nav-item role-sol-hide" data-nav="historial">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     Historial
   </button>
+  <!-- Inventario: admin y bodeguero -->
   <div class="nav-label role-sol-hide">Inventario</div>
   <button class="nav-item role-sol-hide" data-nav="inv-entradas">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
@@ -544,15 +644,17 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     Facturas x Región
   </button>
-  <div class="nav-label role-sol-hide">Control</div>
-  <button class="nav-item role-sol-hide" data-nav="proyectos">
+  <!-- Control: solo admin -->
+  <div class="nav-label role-admin-only">Control</div>
+  <button class="nav-item role-admin-only" data-nav="proyectos">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Proyectos
   </button>
-  <button class="nav-item" data-nav="consumo">
+  <button class="nav-item role-admin-only" data-nav="consumo">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     Consumo Proyecto
   </button>
+  <!-- Sobrantes / Alertas / Procedimiento: admin y bodeguero -->
   <button class="nav-item role-sol-hide" data-nav="sobrantes">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     Sobrantes
@@ -655,13 +757,19 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
           <tr>
             <td class="nps-label-cell">Solicitado por:</td>
             <td><input type="text" id="s-solicitante" placeholder="Nombre completo" required></td>
-            <td class="nps-firma-cell"></td>
+            <td class="nps-firma-cell">
+              <div class="sig-wrap"><canvas id="sig-sol" class="sig-canvas" width="200" height="44"></canvas>
+              <div class="sig-toolbar"><span>Firma aquí</span><button type="button" class="sig-clear" onclick="limpiarFirma('sig-sol')">✕ limpiar</button></div></div>
+            </td>
             <td><input type="date" id="s-fecha-sol"></td>
           </tr>
           <tr>
             <td class="nps-label-cell">Autorizado por:</td>
             <td><input type="text" id="s-autorizador" placeholder="Ej: Erick Hormatabal" value="Erick Hormatabal"></td>
-            <td class="nps-firma-cell"></td>
+            <td class="nps-firma-cell">
+              <div class="sig-wrap"><canvas id="sig-aut" class="sig-canvas" width="200" height="44"></canvas>
+              <div class="sig-toolbar"><span>Firma aquí</span><button type="button" class="sig-clear" onclick="limpiarFirma('sig-aut')">✕ limpiar</button></div></div>
+            </td>
             <td><input type="date" id="s-fecha-aut"></td>
           </tr>
         </tbody>
@@ -725,13 +833,19 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
           <tr>
             <td class="nps-label-cell">Entregado por</td>
             <td><input type="text" id="s-entregado" placeholder="Nombre bodeguero"></td>
-            <td class="nps-firma-cell"></td>
+            <td class="nps-firma-cell">
+              <div class="sig-wrap"><canvas id="sig-entregado" class="sig-canvas" width="200" height="44"></canvas>
+              <div class="sig-toolbar"><span>Firma aquí</span><button type="button" class="sig-clear" onclick="limpiarFirma('sig-entregado')">✕ limpiar</button></div></div>
+            </td>
             <td><input type="date" id="s-fecha-entrega"></td>
           </tr>
           <tr>
             <td class="nps-label-cell">Recibido Conforme</td>
             <td><input type="text" id="s-recibido" placeholder="Nombre receptor"></td>
-            <td class="nps-firma-cell"></td>
+            <td class="nps-firma-cell">
+              <div class="sig-wrap"><canvas id="sig-recibido" class="sig-canvas" width="200" height="44"></canvas>
+              <div class="sig-toolbar"><span>Firma aquí</span><button type="button" class="sig-clear" onclick="limpiarFirma('sig-recibido')">✕ limpiar</button></div></div>
+            </td>
             <td><input type="date" id="s-fecha-recepcion"></td>
           </tr>
         </tbody>
@@ -763,6 +877,51 @@ body.role-solicitante .nav-label.role-sol-hide{display:none!important}
 
     </form>
   </div>
+</div>
+
+<!-- ========== MIS SOLICITUDES ========== -->
+<div class="page" id="page-mis-solicitudes">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Mis Solicitudes</h1>
+      <p>Estado de tus solicitudes y devoluciones</p>
+    </div>
+  </div>
+
+  <div class="card card-sm">
+    <div class="mis-sol-filter">
+      <input type="text" id="mis-nombre" placeholder="Tu nombre (filtra tus solicitudes)" oninput="renderMisSolicitudes()">
+      <select id="mis-f-proyecto" onchange="renderMisSolicitudes()">
+        <option value="">Todos los proyectos</option>
+      </select>
+      <select id="mis-f-estado" onchange="renderMisSolicitudes()">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente revisión</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="despachado">Despachado</option>
+        <option value="rechazado">Rechazado</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="mis-sol-list"></div>
+</div>
+
+<!-- ========== REVISIÓN ========== -->
+<div class="page" id="page-revision">
+  <div class="page-hdr">
+    <div class="page-hdr-text">
+      <h1>Revisión de Solicitudes</h1>
+      <p>Comparativa de materiales solicitados vs. asignación del proyecto</p>
+    </div>
+    <div style="display:flex;gap:var(--sp2);align-items:center">
+      <select class="inv-filter" id="rev-f-proy" onchange="renderRevision()" style="min-width:160px">
+        <option value="">Todos los proyectos</option>
+      </select>
+      <span id="rev-count" style="font-size:var(--text-xs);color:var(--tx-m);white-space:nowrap"></span>
+    </div>
+  </div>
+  <div id="rev-list"></div>
 </div>
 
 <!-- ========== HISTORIAL ========== -->
@@ -1904,15 +2063,18 @@ function navigate(page) {
   const navEl=document.querySelector('[data-nav="'+page+'"]');
   if(navEl) navEl.classList.add('active');
   else { const pEl=document.querySelector('[data-nav="proyectos"]'); if(pEl) pEl.classList.add('active'); }
-  const titles={dashboard:'Dashboard',solicitudes:'Nueva Solicitud',historial:'Historial',devolucion:'Devolución',stock:'Stock Bodega',procedimiento:'Procedimiento',proyectos:'Control de Proyectos',seguimiento:'Seguimiento de Materiales','inv-entradas':'Entradas','inv-salidas':'Salidas','inv-inventario':'Inventario','inv-consolidado':'Consolidado','inv-facturas':'Facturas x Región','sol-adicional':'Solicitud Adicional',consumo:'Consumo por Proyecto',sobrantes:'Sobrantes',alertas:'Alertas de Materiales'};
+  const titles={dashboard:'Dashboard',solicitudes:'Nueva Solicitud','mis-solicitudes':'Mis Solicitudes',revision:'Revisión de Solicitudes',historial:'Historial',devolucion:'Devolución',stock:'Stock Bodega',procedimiento:'Procedimiento',proyectos:'Control de Proyectos',seguimiento:'Seguimiento de Materiales','inv-entradas':'Entradas','inv-salidas':'Salidas','inv-inventario':'Inventario','inv-consolidado':'Consolidado','inv-facturas':'Facturas x Región','sol-adicional':'Solicitud Adicional',consumo:'Consumo por Proyecto',sobrantes:'Sobrantes',alertas:'Alertas de Materiales'};
   document.getElementById('page-title').textContent=titles[page]||'';
   if(page==='dashboard')renderDashboard();
+  if(page==='revision') renderRevision();
+  if(page==='mis-solicitudes'){ poblarSelectProyectos('mis-f-proyecto','Todos los proyectos'); renderMisSolicitudes(); }
   if(page==='solicitudes'){
     renderFilasMateriales();
     const fSol=document.getElementById('s-fecha-sol');
     if(fSol&&!fSol.value) fSol.value=new Date().toISOString().slice(0,10);
     document.getElementById('s-form-num').textContent=String(nextId).padStart(6,'0');
     poblarSelectProyectos('s-proyecto-sel','Seleccionar proyecto...');
+    setTimeout(()=>initSigPads('sig-sol','sig-aut','sig-entregado','sig-recibido'),50);
   }
   if(page==='historial')renderHistorial();
   if(page==='devolucion')renderDevolucion();
@@ -2026,9 +2188,10 @@ function estadoBadge(s){
   return'<span class="tag badge-neu">'+s.estado+'</span>';
 }
 function aprobBadge(a){
-  const map={pendiente:['aprov-pendiente','Pendiente revisión'],revision:['aprov-revision','En revisión (Erick)'],aprobado:['aprov-aprobado','Aprobado'],despachado:['aprov-despachado','Despachado (Ronny)']};
+  const map={pendiente:['aprov-pendiente','Pendiente revisión'],revision:['aprov-revision','En revisión (Erick)'],aprobado:['aprov-aprobado','Aprobado'],despachado:['aprov-despachado','Despachado (Ronny)'],rechazado:['aprov-pendiente','Rechazado']};
   const [cls,txt]=map[a]||map['pendiente'];
-  return`<span class="aprov-badge ${cls}">${txt}</span>`;
+  const style=a==='rechazado'?'style="background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err)"':'';
+  return`<span class="aprov-badge ${cls}" ${style}>${txt}</span>`;
 }
 function renderHistorial(){
   const q=(document.getElementById('hist-search')||{value:''}).value.toLowerCase();
@@ -2145,9 +2308,9 @@ function limpiarFormSolicitud(){
   document.getElementById('s-proyecto-hint').style.display='none';
   document.getElementById('solicitud-tuberia-notice').style.display='none';
   renderFilasMateriales();
-  // poner fecha de hoy
   document.getElementById('s-fecha-sol').value=new Date().toISOString().slice(0,10);
   document.getElementById('s-form-num').textContent=String(nextId).padStart(6,'0');
+  ['sig-sol','sig-aut','sig-entregado','sig-recibido'].forEach(limpiarFirma);
 }
 
 function imprimirFormSolicitud(){
@@ -2176,11 +2339,12 @@ document.getElementById('form-solicitud').addEventListener('submit',e=>{
   }
   const fecha=document.getElementById('s-fecha-sol').value||new Date().toISOString().slice(0,10);
   let ids=[];
+  const firmaSol = getFirmaDataURL('sig-sol');
   materialesSolicitud.forEach(m=>{
     const id='SOL-'+String(nextId++).padStart(3,'0');
     const esTuberia=m.unidad==='ML'||m.nombre.toLowerCase().includes('tubería')||m.nombre.toLowerCase().includes('tuberia');
     const entregado=esTuberia?Math.ceil(m.cantidad/50)*50:m.cantidad;
-    const s={id,fecha,proyecto,codigo:m.codigo,nombreMat:m.nombre,unidad:m.unidad,tipo:esTuberia?'Tubería PE rollo':'Otro',diametro:'',solicitado:m.cantidad,entregado,solicitante,obs:m.obs||'',estado:entregado>m.cantidad?'pendiente-dev':'cerrado',devuelto:0,aprobacion:'pendiente'};
+    const s={id,fecha,proyecto,codigo:m.codigo,nombreMat:m.nombre,unidad:m.unidad,tipo:esTuberia?'Tubería PE rollo':'Otro',diametro:'',solicitado:m.cantidad,entregado,solicitante,obs:m.obs||'',estado:entregado>m.cantidad?'pendiente-dev':'cerrado',devuelto:0,aprobacion:'pendiente',firmaSolicitante:firmaSol};
     solicitudes.push(s);
     ids.push(id);
   });
@@ -3289,17 +3453,139 @@ let nextSobId = 1;
 // Agregar aprobacion a solicitudes demo existentes
 solicitudes.forEach(s=>{if(!s.aprobacion)s.aprobacion='despachado';});
 
+// ===== SIGNATURE PAD =====
+const _sigPads = {};
+function initSigPad(canvasId){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas || _sigPads[canvasId]) return;
+  // Sync canvas resolution to display size
+  const rect = canvas.getBoundingClientRect();
+  if(rect.width > 0){ canvas.width = rect.width * window.devicePixelRatio || rect.width; }
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1a1a2e';
+  ctx.lineWidth = 1.8;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const scale = canvas.width / (rect.width || canvas.width);
+  let drawing = false;
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return {x:(t.clientX - r.left)*scale, y:(t.clientY - r.top)*scale};
+  }
+  canvas.addEventListener('mousedown', e=>{ drawing=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove', e=>{ if(!drawing) return; const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  canvas.addEventListener('mouseup',   ()=>drawing=false);
+  canvas.addEventListener('mouseleave',()=>drawing=false);
+  canvas.addEventListener('touchstart', e=>{ e.preventDefault(); drawing=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); },{passive:false});
+  canvas.addEventListener('touchmove',  e=>{ e.preventDefault(); if(!drawing)return; const p=pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); },{passive:false});
+  canvas.addEventListener('touchend',   ()=>drawing=false);
+  _sigPads[canvasId] = {ctx, canvas, scale};
+}
+function limpiarFirma(canvasId){
+  const p = _sigPads[canvasId];
+  if(p) p.ctx.clearRect(0,0,p.canvas.width,p.canvas.height);
+}
+function getFirmaDataURL(canvasId){
+  const p = _sigPads[canvasId];
+  if(!p) return null;
+  const d = p.ctx.getImageData(0,0,p.canvas.width,p.canvas.height).data;
+  return d.some(v=>v!==0) ? p.canvas.toDataURL() : null;
+}
+function initSigPads(...ids){ ids.forEach(id=>{ delete _sigPads[id]; initSigPad(id); }); }
+
 // ===== ROLE SYSTEM =====
+const ROLES = ['admin','bodeguero','solicitante'];
+const ROLE_LABELS = {admin:'Administrador', bodeguero:'Bodeguero', solicitante:'Solicitante'};
+const ROLE_PILL   = {admin:'is-admin', bodeguero:'is-bod', solicitante:'is-sol'};
+const ROLE_HOME   = {admin:'dashboard', bodeguero:'revision', solicitante:'solicitudes'};
 let currentRole = 'admin';
 function toggleRole(){
-  currentRole = currentRole==='admin'?'solicitante':'admin';
+  const idx = ROLES.indexOf(currentRole);
+  currentRole = ROLES[(idx+1) % ROLES.length];
   document.body.className = 'role-'+currentRole;
-  document.getElementById('role-label').textContent = currentRole==='admin'?'Administrador':'Solicitante';
-  const btn=document.getElementById('role-toggle-btn');
-  btn.className='role-pill '+(currentRole==='admin'?'is-admin':'is-sol');
-  if(currentRole==='solicitante') navigate('solicitudes');
+  document.getElementById('role-label').textContent = ROLE_LABELS[currentRole];
+  const btn = document.getElementById('role-toggle-btn');
+  btn.className = 'role-pill '+ROLE_PILL[currentRole];
+  navigate(ROLE_HOME[currentRole]);
+  actualizarBadgeMisSolicitudes();
 }
 document.body.className='role-admin';
+
+// ===== MIS SOLICITUDES =====
+function actualizarBadgeMisSolicitudes(){
+  // Cuenta solicitudes aprobadas/rechazadas que el usuario aún no ha "visto" (simulado: cuenta aprobado+rechazado)
+  const nuevos = solicitudes.filter(s=>s.aprobacion==='aprobado'||s.aprobacion==='rechazado').length
+               + solicitudesAdicionales.filter(s=>s.aprobacion==='aprobado'||s.aprobacion==='rechazado').length;
+  const badge = document.getElementById('mis-sol-badge');
+  if(!badge) return;
+  if(nuevos>0){ badge.textContent=nuevos; badge.style.display=''; }
+  else badge.style.display='none';
+}
+
+function renderMisSolicitudes(){
+  poblarSelectProyectos('mis-f-proyecto','Todos los proyectos');
+  const nombre = (document.getElementById('mis-nombre')||{value:''}).value.trim().toLowerCase();
+  const fProy  = document.getElementById('mis-f-proyecto')?.value || '';
+  const fEst   = document.getElementById('mis-f-estado')?.value  || '';
+
+  // Proyecto ID → código
+  const proyMap = {};
+  proyectos.forEach(p=>proyMap[p.id]=p.codigo);
+
+  // Unificar solicitudes + adicionales
+  const todas = [
+    ...solicitudes.map(s=>({...s, _tipo:'Nueva Solicitud', _mat: s.nombreMat||s.codigo||'—', _proy: s.proyecto})),
+    ...solicitudesAdicionales.map(s=>({...s, _tipo:'Sol. Adicional', _mat: s.nombre||s.codigo||'—',
+        _proy: proyMap[s.proyecto]||s.proyecto})),
+  ];
+
+  let lista = todas.filter(s=>{
+    const matchNombre = !nombre || (s.solicitante||'').toLowerCase().includes(nombre);
+    const matchProy   = !fProy  || (s._proy||'')===fProy || (s.proyecto||'')=== fProy;
+    const matchEst    = !fEst   || (s.aprobacion||'pendiente')===fEst;
+    return matchNombre && matchProy && matchEst;
+  });
+
+  const container = document.getElementById('mis-sol-list');
+  if(!container) return;
+
+  if(!lista.length){
+    container.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--tx-m)">Sin solicitudes para mostrar.</div>`;
+    return;
+  }
+
+  // Agrupar por tipo
+  const grupos = {};
+  lista.forEach(s=>{ (grupos[s._tipo]||(grupos[s._tipo]=[])).push(s); });
+
+  const tipoIcono = {
+    'Nueva Solicitud':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    'Sol. Adicional':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  };
+
+  container.innerHTML = Object.entries(grupos).map(([tipo, items])=>`
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:var(--sp4)">
+      <div class="mis-group-title">${tipoIcono[tipo]||''} ${tipo} — ${items.length} registro(s)</div>
+      ${items.map(s=>{
+        const ap = s.aprobacion||'pendiente';
+        const esNuevo = ap==='aprobado'||ap==='rechazado';
+        return `<div class="mis-row">
+          <span class="mis-row-id">${s.id}</span>
+          <div class="mis-row-mat">
+            <div class="mis-mat-name">${s._mat}</div>
+            <div class="mis-mat-sub">${s._proy||'—'} · ${s.fecha||''}</div>
+          </div>
+          <span style="font-size:var(--text-xs);color:var(--tx-m)">${s.solicitado||s.cantidad||'—'} ${s.unidad||''}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${aprobBadge(ap)}
+            ${esNuevo?`<span class="mis-alert-badge">nuevo</span>`:''}
+          </div>
+        </div>
+        ${ap==='rechazado'&&s.causante?`<div style="font-size:var(--text-xs);color:var(--err);padding:4px 16px 6px;background:color-mix(in srgb,var(--err) 5%,transparent)">Causa del rechazo: ${s.causante}</div>`:''}`;
+      }).join('')}
+    </div>`).join('');
+}
 
 // ===== POBLAR SELECTS DE PROYECTOS =====
 function poblarSelectProyectos(id, vaciaTxt='Seleccionar proyecto...'){
@@ -3394,6 +3680,233 @@ function avanzarAprobacion(id){
   toast(msgs[ns],'ok');
   renderHistorial();
   renderDashboard();
+  actualizarBadgeRevision();
+}
+
+// ===== REVISIÓN DE SOLICITUDES =====
+
+// Causantes temporales mientras el admin escribe (key = solicitud id)
+const _revCausantes = {};
+
+function actualizarBadgeRevision(){
+  const n = solicitudes.filter(s=>(s.aprobacion||'pendiente')==='pendiente').length;
+  const badge = document.getElementById('rev-pending-badge');
+  if(!badge) return;
+  if(n>0){ badge.textContent=n; badge.style.display=''; }
+  else{ badge.style.display='none'; }
+}
+
+function getProyIdByCodigo(codigoProy){
+  const p = proyectos.find(x=>x.codigo===codigoProy);
+  return p ? p.id : null;
+}
+
+function getMaterialAsignado(proyId, codMat){
+  const pm = proyMateriales[proyId];
+  if(!pm) return null;
+  const item = pm.items.find(i=>i.codigo===codMat);
+  return item ? item.cantidad : null;
+}
+
+function getCantidadYaAprobada(codigoProy, codMat, excludeId){
+  return solicitudes
+    .filter(s=> s.proyecto===codigoProy && s.codigo===codMat
+             && s.id!==excludeId
+             && (s.aprobacion==='aprobado'||s.aprobacion==='despachado'||s.aprobacion==='revision'))
+    .reduce((sum,s)=>sum+(s.solicitado||0), 0);
+}
+
+function renderRevision(){
+  const pendientes = solicitudes.filter(s=>(s.aprobacion||'pendiente')==='pendiente');
+
+  // Poblar filtro de proyecto
+  const fProy = document.getElementById('rev-f-proy');
+  if(fProy){
+    const proyUsados = [...new Set(pendientes.map(s=>s.proyecto))].sort();
+    const sel = fProy.value;
+    fProy.innerHTML = '<option value="">Todos los proyectos</option>' +
+      proyUsados.map(c=>`<option value="${c}" ${c===sel?'selected':''}>${c}</option>`).join('');
+  }
+
+  const filtro = fProy ? fProy.value : '';
+  const lista = filtro ? pendientes.filter(s=>s.proyecto===filtro) : pendientes;
+
+  const countEl = document.getElementById('rev-count');
+  if(countEl) countEl.textContent = lista.length + ' solicitud(es) pendiente(s)';
+
+  const container = document.getElementById('rev-list');
+  if(!container) return;
+
+  if(!lista.length){
+    container.innerHTML = `<div class="rev-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <div style="font-weight:600;margin-bottom:4px">Sin solicitudes pendientes</div>
+      <div style="font-size:var(--text-xs)">Todas las solicitudes han sido procesadas.</div>
+    </div>`;
+    actualizarBadgeRevision();
+    return;
+  }
+
+  container.innerHTML = lista.map(s=>{
+    const proyId = getProyIdByCodigo(s.proyecto);
+    const asignado = proyId!=null ? getMaterialAsignado(proyId, s.codigo) : null;
+    const yaAprobado = getCantidadYaAprobada(s.proyecto, s.codigo, s.id);
+    const totalConEsta = yaAprobado + (s.solicitado||0);
+
+    let estado, rowClass, badgeHtml;
+    if(asignado===null){
+      estado='nodata'; rowClass='rev-row-nodata';
+      badgeHtml=`<span class="rev-badge-nodata">⚠ Sin asignación</span>`;
+    } else if(totalConEsta > asignado){
+      estado='excede'; rowClass='rev-row-excede';
+      const exceso = (totalConEsta - asignado).toFixed(2);
+      badgeHtml=`<span class="rev-badge-excede">✕ Excede +${exceso}</span>`;
+    } else {
+      estado='ok'; rowClass='rev-row-ok';
+      const margen = (asignado - totalConEsta).toFixed(2);
+      badgeHtml=`<span class="rev-badge-ok">✓ OK  (margen ${margen})</span>`;
+    }
+
+    const cardClass = estado==='excede' ? 'rev-excede' : estado==='ok' ? 'rev-ok' : '';
+    const causanteVal = _revCausantes[s.id]||'';
+
+    // Bloque causante (solo si excede)
+    const causanteBlock = estado==='excede' ? `
+      <div class="rev-causante-wrap">
+        <label for="causante-${s.id}">Causante del exceso:</label>
+        <input id="causante-${s.id}" type="text" placeholder="Describe la causa del exceso de material…"
+          value="${causanteVal.replace(/"/g,'&quot;')}"
+          oninput="_revCausantes['${s.id}']=this.value">
+      </div>` : '';
+
+    // Footer actions
+    let footerHtml;
+    const sigId = 'rev-sig-'+s.id;
+    const sigBlock = `
+      <div class="rev-sig-wrap">
+        <span class="rev-sig-label">Firma bodeguero:</span>
+        <div class="rev-sig-canvas-wrap">
+          <div class="sig-wrap"><canvas id="${sigId}" class="sig-canvas" width="300" height="52"></canvas>
+          <div class="sig-toolbar"><span>Firme aquí (mouse o touch)</span><button type="button" class="sig-clear" onclick="limpiarFirma('${sigId}')">✕ limpiar</button></div></div>
+        </div>
+      </div>`;
+
+    if(estado==='excede'){
+      footerHtml = `
+        ${sigBlock}
+        <div class="rev-card-footer">
+          <span class="rev-block-msg">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            No se puede aprobar — excede lo asignado. Ingrese la causante y rechace.
+          </span>
+          <button class="btn btn-sm btn-secondary" onclick="rechazarRevision('${s.id}')" style="border-color:var(--err);color:var(--err)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Rechazar
+          </button>
+        </div>`;
+    } else {
+      const warnMsg = estado==='nodata'
+        ? `<span style="font-size:var(--text-xs);color:var(--warn);flex:1">Sin asignación en el proyecto — verifique antes de aprobar.</span>`
+        : `<span style="font-size:var(--text-xs);color:var(--ok);flex:1">Dentro del presupuesto asignado.</span>`;
+      footerHtml = `
+        ${sigBlock}
+        <div class="rev-card-footer">
+          ${warnMsg}
+          <button class="btn btn-sm btn-secondary" onclick="rechazarRevision('${s.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Rechazar
+          </button>
+          <button class="btn btn-sm btn-primary" onclick="aprobarRevision('${s.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Aprobar
+          </button>
+        </div>`;
+    }
+
+    return `<div class="rev-card ${cardClass}">
+      <div class="rev-card-header">
+        <span class="rev-sol-id">${s.id}</span>
+        <span class="rev-proy">${s.proyecto}</span>
+        <span class="rev-meta">${s.solicitante||'—'}</span>
+        <span class="rev-meta">${s.fecha||''}</span>
+        <span class="aprov-badge aprov-pendiente">pendiente</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rev-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Material</th>
+              <th>U.M.</th>
+              <th>Asignado<br>en proyecto</th>
+              <th>Ya<br>aprobado</th>
+              <th>Esta<br>solicitud</th>
+              <th>Total<br>acumulado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="${rowClass}">
+              <td><code style="font-size:11px">${s.codigo}</code></td>
+              <td style="text-align:left;font-size:var(--text-xs)">${s.nombreMat||'—'}</td>
+              <td>${s.unidad||'—'}</td>
+              <td>${asignado!==null ? asignado : '<span style="color:var(--tx-m)">—</span>'}</td>
+              <td>${yaAprobado>0?yaAprobado:'<span style="color:var(--tx-m)">0</span>'}</td>
+              <td><strong>${s.solicitado}</strong></td>
+              <td><strong ${estado==='excede'?'style="color:var(--err)"':''}>${totalConEsta}</strong></td>
+              <td>${badgeHtml}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      ${causanteBlock}
+      ${footerHtml}
+    </div>`;
+  }).join('');
+
+  actualizarBadgeRevision();
+  // Init sig pads after DOM renders
+  setTimeout(()=>{ lista.forEach(s=>initSigPad('rev-sig-'+s.id)); }, 60);
+}
+
+function aprobarRevision(id){
+  const s = solicitudes.find(x=>x.id===id);
+  if(!s) return;
+  s.aprobacion = 'aprobado';
+  s.firmaBodeguero = getFirmaDataURL('rev-sig-'+id);
+  toast(`Solicitud ${id} aprobada — Ronny notificado para despacho`, 'ok');
+  actualizarBadgeMisSolicitudes();
+  renderRevision();
+  renderDashboard();
+}
+
+function rechazarRevision(id){
+  const s = solicitudes.find(x=>x.id===id);
+  if(!s) return;
+  const proyId = getProyIdByCodigo(s.proyecto);
+  const asignado = proyId!=null ? getMaterialAsignado(proyId, s.codigo) : null;
+  const yaAprobado = getCantidadYaAprobada(s.proyecto, s.codigo, id);
+  const excede = asignado!==null && (yaAprobado + s.solicitado) > asignado;
+
+  if(excede){
+    const causante = (_revCausantes[id]||'').trim();
+    if(!causante){
+      toast('Ingrese la causante del exceso antes de rechazar','err');
+      const inp = document.getElementById('causante-'+id);
+      if(inp){ inp.focus(); inp.style.boxShadow='0 0 0 3px color-mix(in srgb,var(--err) 30%,transparent)'; }
+      return;
+    }
+    s.causante = causante;
+  }
+
+  s.aprobacion = 'rechazado';
+  s.firmaBodeguero = getFirmaDataURL('rev-sig-'+id);
+  delete _revCausantes[id];
+  toast(`Solicitud ${id} rechazada`, 'err');
+  actualizarBadgeMisSolicitudes();
+  renderRevision();
+  renderDashboard();
+  renderHistorial();
 }
 
 // ===== IMPRIMIR SOLICITUD =====
@@ -3639,8 +4152,9 @@ function renderAlertas(){
 
 // ===== INICIALIZACIÓN =====
 poblarTodosSelectsProyectos();
-
 renderDashboard();
+actualizarBadgeRevision();
+actualizarBadgeMisSolicitudes();
 </script>
 </body>
 </html>
